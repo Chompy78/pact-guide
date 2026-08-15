@@ -130,49 +130,20 @@ Last Updated: 2026-08-13
 
 # NEXT
 
-### Set up a public GitHub repo for community sharing
-- Tags: docs tooling onboarding
-- Status: open — **substantially done 2026-08-13** (Claude Code session): the repo is
-  `Chompy78/pact-guide-public` (public, personal account — created by John, populated by the session,
-  renamed 2026-08-15 from `pact-guide` to avoid confusion with this project's own private-mirror
-  namesake), containing all four items plus a GitHub Pages landing page; Issues/Discussions enabled;
-  Pages live and verified (HTTP 200) at `https://chompy78.github.io/pact-guide-public/` (landing),
-  `.../survey/`, and
-  `.../PACT-Players-Guide.html`. The three design docs went up as verbatim snapshot copies
-  (periodically-refreshed, not live-synced — resolves that sub-decision). Swept for
-  player-identifying content before push: none found (only John's own author byline in the guide).
-  **Licence decided and applied 2026-08-15: CC BY-NC-SA 4.0** (`LICENSE.md` in the public repo,
-  README updated to match). **Only remaining item before this task closes: the survey endpoint**
-  (its own task below).
-- Risk: medium — Ambiguity: low, the shape is already decided (see D-2026-08-13-public-community-repo).
-  Damage scale: medium — this is a real public-exposure decision (making design reasoning and the guide
-  visible to strangers), though scoped deliberately to exclude anything player-identifying.
-- Create a new, dedicated public GitHub repo (separate from `chompy78/pact`, which is the unrelated
-  PACT-copilot-only tools project) hosting: the finished Player's Guide, `TASK_BOARD.md`, `DECISIONS.md`,
-  `OPEN-QUESTIONS.md`, and the player survey (static HTML, Formspree-backed — see the survey's own
-  rebuild task below). Enable Issues/Discussions for community feedback and PRs for wording fixes.
-  Explicitly excludes `playtest/PLAYTEST-EVIDENCE.md`, session notes, and anything player-identifying —
-  those stay in this privately-hosted project, unchanged. See D-2026-08-13-public-community-repo for the
-  full reasoning and the G/H options considered.
-- Needs a Claude Code session (real GitHub push access) rather than this project's usual MCP-connector
-  sessions, which can't create repos or push to GitHub directly.
-- Open sub-decisions, not yet made: repo name, license, whether `TASK_BOARD.md`/`DECISIONS.md`/
-  `OPEN-QUESTIONS.md` are pushed as periodically-refreshed copies or live-synced (and if the latter,
-  what refresh discipline — the project's old `for-copilot/` mirror pattern is the closest precedent,
-  though that was retired for M365 Copilot specifically, see D-2026-08-06-retire-copilot-sync-rule).
-- Done when: the repo exists, is public, contains the four items listed above, Issues/Discussions are
-  on, and the survey's public link (once rebuilt — see below) resolves from it.
-
 ### Rebuild the player survey off Claude-artifact hosting (Formspree + static HTML)
 - Tags: tooling onboarding
 - Status: open — **endpoint wired and delivery verified 2026-08-15**; awaiting one real-phone tap-through
   to sign off the Done-when as literally written
 - Endpoint swap done 2026-08-15 (Claude Code session): the owner supplied
-  `https://formspree.io/f/mgawleyl`; it replaced the `REPLACE_ME` placeholder in both copies (this
-  project's `playtest/surveys/onboarding-spellcasting-survey.html` and the public repo's
-  `survey/index.html`), both pushed. The live page at
-  `https://chompy78.github.io/pact-guide-public/survey/` was confirmed serving the real endpoint (and
-  byte-for-byte identical to this project's copy).
+  `https://formspree.io/f/mgawleyl`; it replaced the `REPLACE_ME` placeholder in both copies, both
+  pushed. The live page at `https://chompy78.github.io/pact-guide-public/survey/` was confirmed serving
+  the real endpoint (and byte-for-byte identical to this project's copy).
+- **Superseded later the same day:** the single survey this task describes was split into six topic
+  surveys (see D-2026-08-15-split-player-survey). The file named throughout this task,
+  `playtest/surveys/onboarding-spellcasting-survey.html`, is now
+  `archive/onboarding-spellcasting-survey-superseded-2026-08-15.html`; the live build is
+  `playtest/surveys/pact-surveys.html`. **The one criterion still outstanding — the real mobile test —
+  now applies to the six-survey build**, not the archived one. Everything else in this task is done.
 - End-to-end submission **confirmed working** 2026-08-15 — the step never actually confirmed during the
   earlier troubleshooting. A full survey run was completed through the real page JS at a 375×812 mobile
   viewport and submitted; the page showed its success state (only reachable when Formspree returns 2xx),
@@ -205,9 +176,10 @@ Last Updated: 2026-08-13
   the new public repo above via GitHub Pages (or equivalent).
 - Done when: the survey submits successfully to Formspree from a real mobile test **[part-met — submits
   and delivers successfully, verified end-to-end 2026-08-15, but from an emulated mobile viewport, not a
-  real device]**, the page no longer references `window.storage` anywhere **[met — grep confirms zero
-  references]**, and it's confirmed reachable at a public URL served from the new repo **[met — HTTP 200
-  at `https://chompy78.github.io/pact-guide-public/survey/`]**.
+  real device; re-verify against the six-survey build]**, the page no longer references `window.storage`
+  anywhere **[met — grep confirms zero references in `pact-surveys.html` and `survey-prompt.js`]**, and
+  it's confirmed reachable at a public URL served from the new repo **[met — all six survey URLs plus
+  the hub returning HTTP 200 at `https://chompy78.github.io/pact-guide-public/survey/`]**.
 
 ### Wire the survey prompt into the PACT-copilot-only tools
 - Tags: tooling onboarding
