@@ -13,6 +13,77 @@ Last Updated: 2026-08-13
 
 ---
 
+## D-2026-08-15-split-player-survey — One combined survey becomes six topic surveys off a single mode-driven file, with a remembered player profile
+
+- **Context:** The combined survey (built 2026-08-13, endpoint verified 2026-08-15) asked about character
+  creation, AP spending, spellcasting and the campaign in one five-step run. The owner wanted it split
+  into six focused surveys — character creation, the rules in general, spellcasting, class abilities, the
+  campaign, and the character generator tools — each short enough to send on its own after a session,
+  rather than one long form nobody fills in twice.
+- **Decisions:**
+  - **Six surveys, one file.** `playtest/surveys/pact-surveys.html` serves all six: `/survey/` renders a
+    hub, `/survey/?s=<key>` renders one survey. Chosen over six standalone HTML files, which would have
+    duplicated ~700 lines of shared machinery six times and required every future fix to be repeated and
+    kept in sync — the exact discipline problem that retired the old `for-copilot/` mirrors. The existing
+    public URL keeps working and becomes the hub.
+  - **Questions are data, not markup.** Each survey is an array of question objects rendered by one
+    ~120-line renderer supporting text/number/textarea/radio/check/scale/session types plus a declarative
+    `showIf` for conditional follow-ups. Adding or reordering a question is a one-line data edit.
+  - **Common fields are remembered on the device.** Name, races, classes, level, sessions played,
+    caster flag and contact persist to `localStorage` and prefill every subsequent survey, so a player
+    fills them once. Session date is deliberately excluded — it is per-response, not per-player. All
+    storage access is wrapped: a device with storage disabled can still complete and submit.
+  - **One Formspree endpoint, tagged.** All six post to the existing `/f/mgawleyl` with a `survey` field
+    and a per-survey subject line. Chosen over six forms because it needs no new setup, keeps the one
+    endpoint already verified working, and avoids the free plan's form/submission caps. Reversible: the
+    `survey` field is what a later split would key on. **[VERIFY]** the plan's actual caps if volume grows.
+  - **Existing question wording migrated verbatim**, not rewritten, so previously-approved phrasing is
+    preserved. `classes` and `tools` are genuinely new question sets and are marked `[DRAFT]` in-page
+    pending owner review.
+- **Triggering:** all five mechanisms the owner asked for, built as one shared `survey-prompt.js`:
+  a distinct shareable link per survey; the hub; conditional offering (the spellcasting survey is hidden
+  from a character flagged non-caster, and any survey already sent is de-emphasised); and an occasional
+  in-page prompt that picks its survey from the heading the reader is nearest — wired into the guide with
+  a single deferred script tag. The prompt never appears for a survey already sent, is capped at once a
+  week per topic, and is dismissible.
+- **Cross-project seam:** the DM Console and character generator live in **PACT-copilot-only**, which this
+  project's AGENTS.md puts out of scope, so nothing was edited there. Instead `survey-prompt.js` exposes
+  `PactSurveyPrompt.show(key, {force})` and a `data-manual` mode, so that project can fire a survey with
+  one script tag and one call without knowing anything about how surveys work. Note the "already sent"
+  state is `localStorage`, which is shared per-origin: tools served from the same host as the survey see
+  it, tools on a different host will prompt independently.
+- **Status:** Built, reviewed, and published 2026-08-15 (see addendum).
+- **Addendum 2026-08-15 (review outcome — all six question sets rewritten on one spine):** the owner
+  reviewed the two new question sets and asked for three changes, all applied.
+  - **Align every survey, not just the two new ones.** All six question sets were rewritten from scratch
+    around a shared seven-theme spine — clarity, caught-you-out, couldn't-have, fairness, friction,
+    overall, one-change — with parallel field names per survey (`ccClarity`/`ruClarity`/`spClarity`/…).
+    This makes answers directly comparable across topics and over time: `*Overall` charts all six on one
+    axis, `*Fair` compares class-feature pricing against spellcasting pricing. Alignment is 6/6 on every
+    theme except `*Fair`, which the campaign survey has no analogue for (a campaign has no prices).
+    This deliberately **replaced previously-approved wording** in the four migrated surveys at the owner's
+    explicit request; the prior wording is preserved in git at commit `083b91d`.
+  - **Every theme gets a rating as well as a description.** Two yes/no questions became rating-plus-
+    description pairs so severity is captured, not just occurrence.
+  - **Descriptions are revealed by low ratings, not shown always.** The owner asked whether 15 questions
+    was too many — it was, and notably the two 15-question surveys were the two drafted without prior
+    wording to discipline them (the four migrated ones ran 6–10). The real cost was seven always-on
+    free-text boxes: nobody writes seven paragraphs, so the result would have been sparse text *and* an
+    intimidating scroll, undermining the whole point of splitting. Fixed by extending `showIf` to test
+    scale thresholds (`{scale:'clFair', lte:3}`) rather than only radio values, so a follow-up box
+    appears only for a rating of 3 or less, or a yes to a problem question. **Measured effect: a content
+    respondent sees 9 questions on the class survey rather than 15, expanding to 18 only for someone
+    actually reporting problems** — so the free text is asked of the people with something to say. All six
+    surveys now sit at 7–9 questions for a content respondent.
+  - **Also fixed:** the tools survey asked someone who had used none of the tools to rate how well they
+    work. A non-user now gets one question instead — what's kept you from using them — which is the more
+    useful answer anyway.
+  - **Not reviewed:** the in-guide prompt's defaults (1-in-4 chance per eligible view, once a week per
+    topic, 20-second delay) were surfaced twice but never commented on. They stand as written — all four
+    are single-value changes in `survey-prompt.js` if the table finds them annoying.
+
+---
+
 ## D-2026-08-13-public-community-repo — New dedicated public GitHub repo for community sharing; player-evidence files stay private
 
 - **Context:** Wanted a way to share this project with the community for feedback and potential

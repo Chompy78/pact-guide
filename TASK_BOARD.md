@@ -209,6 +209,21 @@ Last Updated: 2026-08-13
   references]**, and it's confirmed reachable at a public URL served from the new repo **[met — HTTP 200
   at `https://chompy78.github.io/pact-guide-public/survey/`]**.
 
+### Wire the survey prompt into the PACT-copilot-only tools
+- Tags: tooling onboarding
+- Status: open — unblocked 2026-08-15, the six-survey split is now published
+- Risk: low — Ambiguity: none, the seam is built and documented. Damage: low, one script tag in another
+  project; removing it is a one-line revert.
+- Context: the DM Console and character generator live in `PACT-copilot-only`, out of scope for this
+  project, so nothing was edited there. `survey-prompt.js` was built as the seam: that project needs only
+  a script tag plus, optionally, `PactSurveyPrompt.show('tools', {force:true})` on a button. Usage is
+  documented in the file's own header comment.
+- Caveat to check when doing it: the "already sent" record lives in `localStorage`, which is shared
+  per-origin, not per-path. Tools served from the same host as the survey inherit it; tools on a
+  different host will prompt independently of what the player has already answered.
+- Done when: the tools project loads the prompt and a real click-through from a tool reaches the
+  `tools` survey, with a DECISIONS.md entry in *that* project recording the integration.
+
 ### Move the refresh script's working clone out of the H:-drive-visible tree
 - Tags: tooling
 - Status: open

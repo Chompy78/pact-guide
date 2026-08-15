@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>How's Your PACT Character Going?</title>
+<title>PACT Player Feedback</title>
 <style>
   :root{
     --ink:#3A2A18; --ink-dark:#58180D; --accent:#882D17; --gold:#B89968;
@@ -34,6 +34,7 @@
   .ps-step .ps-step-note{font-size:.85rem;color:var(--muted);margin:0 0 16px;}
   .ps-q{margin-bottom:20px;}
   .ps-q > label.ps-qlabel{display:block;font-weight:600;margin-bottom:6px;font-size:.95rem;color:var(--ink-dark);}
+  .ps-q .ps-qlabel{display:block;font-weight:600;margin-bottom:6px;font-size:.95rem;color:var(--ink-dark);}
   .ps-q .ps-hint{font-size:.8rem;color:var(--muted);margin:-2px 0 8px;}
   .ps-row2{display:flex;gap:10px;}
   .ps-row2 > div{flex:1;}
@@ -64,6 +65,21 @@
   .ps-footer a{color:var(--muted);text-decoration:underline;cursor:pointer;}
   .ps-error{color:#8a0000;background:#ffd6d6;border:2px solid #8a0000;font-size:1rem;font-weight:700;
     padding:14px;border-radius:8px;margin-top:12px;display:none;}
+  /* ---- hub ---- */
+  .ps-hub-list{display:flex;flex-direction:column;gap:10px;}
+  .ps-hub-item{display:block;text-align:left;width:100%;padding:14px 16px;border:1px solid var(--gold);
+    border-radius:var(--radius);background:var(--card);cursor:pointer;font-family:inherit;color:var(--ink);}
+  .ps-hub-item:hover{background:var(--sage);border-color:var(--accent);}
+  .ps-hub-item .ps-hub-name{display:block;font-weight:700;color:var(--ink-dark);font-size:1rem;margin-bottom:2px;}
+  .ps-hub-item .ps-hub-desc{display:block;font-size:.83rem;color:var(--muted);line-height:1.4;}
+  .ps-hub-item .ps-hub-flag{display:inline-block;font-size:.7rem;color:var(--accent);font-weight:700;
+    text-transform:uppercase;letter-spacing:.04em;margin-top:6px;}
+  .ps-hub-item.ps-done{opacity:.62;}
+  .ps-known{background:var(--quote);border:1px dashed var(--gold);border-radius:8px;padding:10px 12px;
+    font-size:.83rem;color:var(--muted);margin-bottom:14px;}
+  .ps-known strong{color:var(--ink-dark);}
+  .ps-known button{background:none;border:none;color:var(--accent);text-decoration:underline;cursor:pointer;
+    font-size:.83rem;font-family:inherit;padding:0;}
   @media (max-width:380px){.ps-scale{flex-wrap:wrap;} .ps-scale button{min-width:18%;} .ps-row2{flex-direction:column;}}
 </style>
 </head>
@@ -71,393 +87,50 @@
 
 <div class="pact-survey" id="psRoot">
 
-  <div id="psSurvey">
+  <!-- ============ HUB ============ -->
+  <div id="psHub" style="display:none;">
     <div class="ps-header">
-      <h1 class="ps-display" id="psTitle">How's Your PACT Character Going?</h1>
-      <p class="ps-sub">Five minutes, tops. Tell us about building your character, spending AP, and how
-        the table's feeling — it goes straight into fixing the guide.</p>
+      <h1 class="ps-display">PACT Player Feedback</h1>
+      <p class="ps-sub">Short, focused surveys — pick whichever you've actually got something to say about.
+        Two or three minutes each.</p>
+    </div>
+    <div class="ps-known" id="psHubKnown" style="display:none;"></div>
+    <div class="ps-hub-list" id="psHubList"></div>
+    <div class="ps-footer">
+      <p>PACT Rules &amp; Guide — player feedback. Responses go privately to the DM.</p>
+    </div>
+  </div>
+
+  <!-- ============ SURVEY ============ -->
+  <div id="psSurvey" style="display:none;">
+    <div class="ps-header">
+      <h1 class="ps-display" id="psTitle"></h1>
+      <p class="ps-sub" id="psSub"></p>
     </div>
 
     <div class="ps-progress" id="psProgress"></div>
 
     <form id="psForm" autocomplete="off">
-
-      <!-- STEP 0 -->
+      <!-- STEP 0: common identity fields, rendered from COMMON -->
       <div class="ps-step active" data-step="0">
         <div class="ps-card">
           <h2 class="ps-display">You &amp; Your Character</h2>
-          <p class="ps-step-note">All optional, but this helps line answers up with what actually
-            happened at the table.</p>
-
-          <div class="ps-q">
-            <label class="ps-qlabel" for="q_player">Your name or table handle</label>
-            <input type="text" id="q_player" name="player">
-          </div>
-
-          <div class="ps-q ps-row2">
-            <div>
-              <label class="ps-qlabel" for="q_race1">Race</label>
-              <input type="text" id="q_race1" name="race1" placeholder="e.g. Human">
-            </div>
-            <div>
-              <label class="ps-qlabel" for="q_race2">Second race (if you have one)</label>
-              <input type="text" id="q_race2" name="race2" placeholder="e.g. Elf">
-            </div>
-          </div>
-
-          <div class="ps-q ps-row2">
-            <div>
-              <label class="ps-qlabel" for="q_class1">Class</label>
-              <input type="text" id="q_class1" name="class1" placeholder="e.g. Paladin">
-            </div>
-            <div>
-              <label class="ps-qlabel" for="q_class2">Second class (if multiclassed)</label>
-              <input type="text" id="q_class2" name="class2" placeholder="e.g. Warlock">
-            </div>
-          </div>
-
-          <div class="ps-q">
-            <label class="ps-qlabel" for="q_level">Character level (Hit Dice owned)</label>
-            <input type="number" id="q_level" name="level" min="0" max="20">
-          </div>
-
-          <div class="ps-q">
-            <label class="ps-qlabel" for="q_sessionDate">Which session are you thinking of?</label>
-            <p class="ps-hint">Pick the Thursday, or "Not sure / other" if it's not tied to one session.</p>
-            <select id="q_sessionDate" name="sessionDate"></select>
-          </div>
-
-          <div class="ps-q">
-            <label class="ps-qlabel" for="q_sessionsPlayed">Roughly how many PACT sessions have you played in total?</label>
-            <input type="number" id="q_sessionsPlayed" name="sessionsPlayed" min="0">
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Does or did this character have any spellcasting — a
-              Foundation and Rank (Wizard, Cleric, Paladin, an innate dabbler, etc.)?</span>
-            <div class="ps-choices ps-row" data-radio="hasCaster">
-              <label class="ps-choice"><input type="radio" name="hasCaster" value="yes"> Yes</label>
-              <label class="ps-choice"><input type="radio" name="hasCaster" value="no"> No</label>
-              <label class="ps-choice"><input type="radio" name="hasCaster" value="unsure"> Not sure</label>
-            </div>
-          </div>
+          <p class="ps-step-note" id="psCommonNote">All optional, but this helps line answers up with what
+            actually happened at the table. Your device remembers these, so you only fill them in once.</p>
+          <div id="psCommonFields"></div>
         </div>
         <div class="ps-nav">
           <span></span>
-          <button type="button" class="ps-btn" data-next>Next: Building the character →</button>
+          <button type="button" class="ps-btn" data-next id="psStep0Next">Next →</button>
         </div>
       </div>
 
-      <!-- STEP 1: ONBOARDING -->
+      <!-- STEP 1: the chosen survey's own questions -->
       <div class="ps-step" data-step="1">
         <div class="ps-card">
-          <h2 class="ps-display">Building Your Character</h2>
-          <p class="ps-step-note">About making this character, start to finish — reading, picking, spending.</p>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Did you read the actual guide, or just use the character generator tool?</span>
-            <div class="ps-choices" data-radio="guideOrGenerator">
-              <label class="ps-choice"><input type="radio" name="guideOrGenerator" value="read_guide"> Read the guide myself</label>
-              <label class="ps-choice"><input type="radio" name="guideOrGenerator" value="generator_only"> Just used the character generator tool</label>
-              <label class="ps-choice"><input type="radio" name="guideOrGenerator" value="both"> Both — read some, then used the generator</label>
-              <label class="ps-choice"><input type="radio" name="guideOrGenerator" value="explained"> Neither — someone explained it to me / the DM built it with me</label>
-            </div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">How did you actually go about building it? (pick all that apply)</span>
-            <div class="ps-choices" data-check="buildMethod">
-              <label class="ps-choice"><input type="checkbox" name="buildMethod" value="read_top_to_bottom"> Read the guide top to bottom first</label>
-              <label class="ps-choice"><input type="checkbox" name="buildMethod" value="jumped_examples"> Jumped straight to the §3 worked examples and copied the shape</label>
-              <label class="ps-choice"><input type="checkbox" name="buildMethod" value="dm_walked_through"> The DM walked me through it live</label>
-              <label class="ps-choice"><input type="checkbox" name="buildMethod" value="generator_tool"> Used the character generator tool</label>
-              <label class="ps-choice"><input type="checkbox" name="buildMethod" value="other_method"> Something else</label>
-            </div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Overall, how smooth did character creation feel?</span>
-            <div class="ps-scale" data-scale="smoothness">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>Painful, needed a lot of help</span><span>Easy, no trouble at all</span></div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Did you have to stop and ask someone (the DM or another player) what to do next?</span>
-            <div class="ps-choices ps-row" data-radio="hadToAsk">
-              <label class="ps-choice"><input type="radio" name="hadToAsk" value="yes"> Yes</label>
-              <label class="ps-choice"><input type="radio" name="hadToAsk" value="no"> No</label>
-            </div>
-          </div>
-          <div class="ps-q" id="stuckWrap" style="display:none;">
-            <label class="ps-qlabel" for="q_stuckStep">What step were you stuck on?</label>
-            <textarea id="q_stuckStep" name="stuckStep"></textarea>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Which step, if any, took longer than it should have? (pick all that apply)</span>
-            <div class="ps-choices" data-check="slowStep">
-              <label class="ps-choice"><input type="checkbox" name="slowStep" value="concept"> Picking a concept</label>
-              <label class="ps-choice"><input type="checkbox" name="slowStep" value="stats_dumps"> Setting starting stats, dumps and drawbacks</label>
-              <label class="ps-choice"><input type="checkbox" name="slowStep" value="origin_class"> Choosing an origin class</label>
-              <label class="ps-choice"><input type="checkbox" name="slowStep" value="spending_ap"> Spending AP across everything on the list</label>
-              <label class="ps-choice"><input type="checkbox" name="slowStep" value="hit_dice"> Buying Hit Dice / working out that Hit Dice = level</label>
-              <label class="ps-choice"><input type="checkbox" name="slowStep" value="gold_convert"> Converting AP into starting gold</label>
-              <label class="ps-choice"><input type="checkbox" name="slowStep" value="none_slow"> None of these — it was all fine</label>
-            </div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">The guide's rule is "your level is just how many Hit Dice you own." Was that clear the first time you read it?</span>
-            <div class="ps-choices" data-radio="hdClear">
-              <label class="ps-choice"><input type="radio" name="hdClear" value="clear"> Yes, clear straight away</label>
-              <label class="ps-choice"><input type="radio" name="hdClear" value="no"> No, I misunderstood it at first</label>
-              <label class="ps-choice"><input type="radio" name="hdClear" value="didnt_notice"> I didn't really notice this rule until later</label>
-            </div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Did the §3 worked examples (a martial build and a caster build) match what you were trying to build?</span>
-            <div class="ps-choices" data-radio="examplesMatch">
-              <label class="ps-choice"><input type="radio" name="examplesMatch" value="closely"> Yes, closely</label>
-              <label class="ps-choice"><input type="radio" name="examplesMatch" value="somewhat"> Somewhat</label>
-              <label class="ps-choice"><input type="radio" name="examplesMatch" value="not_really"> No, I had to improvise a fair bit</label>
-            </div>
-          </div>
-          <div class="ps-q" id="examplesDiffWrap" style="display:none;">
-            <label class="ps-qlabel" for="q_examplesDiff">What was different about your concept?</label>
-            <textarea id="q_examplesDiff" name="examplesDiff"></textarea>
-          </div>
-
-          <div class="ps-q">
-            <label class="ps-qlabel" for="q_onboardingFree">One thing that would have saved you the most time or confusion, if it had been clearer?</label>
-            <textarea id="q_onboardingFree" name="onboardingFree"></textarea>
-          </div>
-        </div>
-        <div class="ps-nav">
-          <button type="button" class="ps-btn ps-secondary" data-back>← Back</button>
-          <button type="button" class="ps-btn" data-next>Next →</button>
-        </div>
-      </div>
-
-      <!-- STEP 2: SPENDING AP AFTER CREATION -->
-      <div class="ps-step" data-step="2">
-        <div class="ps-card">
-          <h2 class="ps-display">Spending AP After Creation</h2>
-          <p class="ps-step-note">Character creation is one thing — this is about buying stuff once
-            you're actually playing: levelling up, new features, spells, the works.</p>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Have you spent AP on anything since your character was first created?</span>
-            <div class="ps-choices ps-row" data-radio="spentSince">
-              <label class="ps-choice"><input type="radio" name="spentSince" value="yes"> Yes</label>
-              <label class="ps-choice"><input type="radio" name="spentSince" value="no"> Not yet</label>
-            </div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">How clear is it what you can buy, or afford, when you get new AP?</span>
-            <div class="ps-scale" data-scale="apSpendClarity">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>No idea, have to ask</span><span>Always obvious</span></div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Ever had to stop and puzzle out costs or what you're allowed to buy?</span>
-            <div class="ps-choices ps-row" data-radio="apSpendStuck">
-              <label class="ps-choice"><input type="radio" name="apSpendStuck" value="yes"> Yes</label>
-              <label class="ps-choice"><input type="radio" name="apSpendStuck" value="no"> No</label>
-            </div>
-          </div>
-          <div class="ps-q" id="apSpendStuckWrap" style="display:none;">
-            <label class="ps-qlabel" for="q_apSpendStuckWhat">What were you trying to buy, and what tripped you up?</label>
-            <textarea id="q_apSpendStuckWhat" name="apSpendStuckWhat"></textarea>
-          </div>
-
-          <div class="ps-q">
-            <label class="ps-qlabel" for="q_apSpendFree">Anything about spending AP after creation that could be clearer?</label>
-            <textarea id="q_apSpendFree" name="apSpendFree"></textarea>
-          </div>
-        </div>
-        <div class="ps-nav">
-          <button type="button" class="ps-btn ps-secondary" data-back>← Back</button>
-          <button type="button" class="ps-btn" data-next>Next →</button>
-        </div>
-      </div>
-
-      <!-- STEP 3: SPELLCASTING (conditional) -->
-      <div class="ps-step" data-step="3">
-        <div class="ps-card">
-          <h2 class="ps-display">Spellcasting</h2>
-          <p class="ps-step-note">Foundation, Rank, Tradition, slots, spells known — the parts of PACT's
-            magic system. Only asked because you flagged this character as a caster (or weren't sure).</p>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Which of these, if any, were confusing at first? (pick all that apply)</span>
-            <div class="ps-choices" data-check="casterConfusion">
-              <label class="ps-choice"><input type="checkbox" name="casterConfusion" value="foundation"> Spellcasting Foundation — what it actually unlocks</label>
-              <label class="ps-choice"><input type="checkbox" name="casterConfusion" value="rank"> Spellcasting Rank — how it relates to your Hit Dice</label>
-              <label class="ps-choice"><input type="checkbox" name="casterConfusion" value="hd_gate"> The Hit-Dice gate for spell levels ("a 2nd-level spell needs 3 Hit Dice")</label>
-              <label class="ps-choice"><input type="checkbox" name="casterConfusion" value="slots_vs_known"> Spell slots vs. spells known — that they're two different things</label>
-              <label class="ps-choice"><input type="checkbox" name="casterConfusion" value="tradition_discipline"> Tradition vs. Discipline — the difference between the two</label>
-              <label class="ps-choice"><input type="checkbox" name="casterConfusion" value="cantrips"> Cantrips — innate dabbling vs. Foundation-backed cantrips</label>
-              <label class="ps-choice"><input type="checkbox" name="casterConfusion" value="multiclass"> Adding a second Discipline or Tradition later</label>
-              <label class="ps-choice"><input type="checkbox" name="casterConfusion" value="none_caster"> None of these confused me</label>
-            </div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Did you or your DM ever stop mid-session to look up a spellcasting rule?</span>
-            <div class="ps-choices ps-row" data-radio="midSessionLookup">
-              <label class="ps-choice"><input type="radio" name="midSessionLookup" value="yes"> Yes</label>
-              <label class="ps-choice"><input type="radio" name="midSessionLookup" value="no"> No</label>
-            </div>
-          </div>
-          <div class="ps-q" id="lookupWrap" style="display:none;">
-            <label class="ps-qlabel" for="q_lookupWhat">What were you trying to do, and which step caused the pause?</label>
-            <textarea id="q_lookupWhat" name="lookupWhat"></textarea>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Right now, how confident are you explaining the difference between a spell slot and a spell known?</span>
-            <div class="ps-scale" data-scale="slotKnownConfidence">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>Not confident</span><span>Very confident</span></div>
-          </div>
-
-          <div class="ps-q">
-            <label class="ps-qlabel" for="q_casterFree">If you could change one thing about how spellcasting is explained, what would it be?</label>
-            <textarea id="q_casterFree" name="casterFree"></textarea>
-          </div>
-        </div>
-        <div class="ps-nav">
-          <button type="button" class="ps-btn ps-secondary" data-back>← Back</button>
-          <button type="button" class="ps-btn" data-next>Next →</button>
-        </div>
-      </div>
-
-      <!-- STEP 4: CAMPAIGN FEEDBACK -->
-      <div class="ps-step" data-step="4">
-        <div class="ps-card">
-          <h2 class="ps-display">Campaign Feedback</h2>
-          <p class="ps-step-note">Nothing to do with rules or character-building — just how the
-            campaign itself is landing.</p>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">How's the campaign going for you overall?</span>
-            <div class="ps-scale" data-scale="campaignOverall">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>Not feeling it</span><span>Loving it</span></div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">How was last session?</span>
-            <div class="ps-scale" data-scale="lastSessionRating">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>Rough one</span><span>One of the best</span></div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">How was the pacing of last session?</span>
-            <div class="ps-scale" data-scale="lastSessionPacing">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>Dragged</span><span>Flew by</span></div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">How satisfying were the challenges/encounters last session?</span>
-            <div class="ps-scale" data-scale="lastSessionChallenge">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>Not great</span><span>Really satisfying</span></div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">How satisfying were the roleplay/story moments last session?</span>
-            <div class="ps-scale" data-scale="lastSessionRoleplay">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>Not great</span><span>Really satisfying</span></div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">How much spotlight/agency did you feel like you had last session?</span>
-            <div class="ps-scale" data-scale="lastSessionSpotlight">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>Barely any</span><span>Plenty</span></div>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">How engaged do you feel during sessions lately?</span>
-            <div class="ps-scale" data-scale="campaignEngagement">
-              <button type="button" data-val="1">1</button>
-              <button type="button" data-val="2">2</button>
-              <button type="button" data-val="3">3</button>
-              <button type="button" data-val="4">4</button>
-              <button type="button" data-val="5">5</button>
-            </div>
-            <div class="ps-scale-labels"><span>Checked out</span><span>Fully hooked</span></div>
-          </div>
-
-          <div class="ps-q">
-            <label class="ps-qlabel" for="q_campaignFreeText">Anything else — about the campaign, last session, the rules, whatever?</label>
-            <textarea id="q_campaignFreeText" name="campaignFreeText"></textarea>
-          </div>
-
-          <div class="ps-q">
-            <span class="ps-qlabel">Okay if the DM follows up about your answers?</span>
-            <div class="ps-choices ps-row" data-radio="canFollowUp">
-              <label class="ps-choice"><input type="radio" name="canFollowUp" value="yes"> Yes</label>
-              <label class="ps-choice"><input type="radio" name="canFollowUp" value="no"> No</label>
-            </div>
-          </div>
-          <div class="ps-q" id="contactWrap" style="display:none;">
-            <label class="ps-qlabel" for="q_contact">Best way to reach you (Discord handle, email, etc.)</label>
-            <input type="text" id="q_contact" name="contact">
-          </div>
+          <h2 class="ps-display" id="psSurveyHeading"></h2>
+          <p class="ps-step-note" id="psSurveyNote"></p>
+          <div id="psSurveyFields"></div>
         </div>
         <div class="ps-nav">
           <button type="button" class="ps-btn ps-secondary" data-back>← Back</button>
@@ -470,11 +143,11 @@
     <div class="ps-thanks" id="psThanks" style="display:none;">
       <h2>Nice, that's in.</h2>
       <p>Thanks for taking the time — this goes straight toward making the guide better.</p>
-      <button type="button" class="ps-btn" id="psAnotherBtn">Fill out for another character</button>
+      <button type="button" class="ps-btn" id="psHubBtn">Back to the other surveys</button>
     </div>
 
     <div class="ps-footer">
-      <p>PACT Rules &amp; Guide — quick player feedback survey. Responses go privately to the DM.</p>
+      <p>PACT Rules &amp; Guide — player feedback. Responses go privately to the DM.</p>
     </div>
   </div>
 </div>
@@ -484,201 +157,701 @@
 try {
   // ---- Formspree endpoint: create a form at https://formspree.io and paste its
   // https://formspree.io/f/xxxxxxxx address here before sharing this page. ----
+  // All six surveys post here; each record carries a `survey` field and a distinct
+  // subject line, so responses stay separable in one dashboard.
   const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgawleyl';
 
-  const root = document.getElementById('psRoot');
-  const steps = Array.from(root.querySelectorAll('.ps-step'));
-  const progressEl = document.getElementById('psProgress');
-  const form = document.getElementById('psForm');
-  const SPELLCASTING_STEP = 3;
-  const LAST_STEP = 4;
-  let stepIdx = 0;
-  let skipSpellcasting = false;
+  const PROFILE_KEY = 'pact_survey_profile_v1';   // remembered common fields
+  const DONE_KEY    = 'pact_survey_done_v1';      // {surveyKey: isoTimestamp}
 
-  const answers = { scales: {} };
+  // =====================================================================
+  // COMMON FIELDS — asked on every survey, remembered on the device.
+  // `noStore` fields are asked every time (they're per-response, not per-player).
+  // =====================================================================
+  const COMMON = [
+    {id:'player', type:'text', label:'Your name or table handle'},
+    {id:'race1', type:'text', label:'Race', placeholder:'e.g. Human', pair:'races'},
+    {id:'race2', type:'text', label:'Second race (if you have one)', placeholder:'e.g. Elf', pair:'races'},
+    {id:'class1', type:'text', label:'Class', placeholder:'e.g. Paladin', pair:'classes'},
+    {id:'class2', type:'text', label:'Second class (if multiclassed)', placeholder:'e.g. Warlock', pair:'classes'},
+    {id:'level', type:'number', label:'Character level (Hit Dice owned)', min:0, max:20},
+    {id:'sessionsPlayed', type:'number', label:'Roughly how many PACT sessions have you played in total?', min:0},
+    {id:'hasCaster', type:'radio', row:true,
+      label:'Does or did this character have any spellcasting — a Foundation and Rank (Wizard, Cleric, Paladin, an innate dabbler, etc.)?',
+      options:[['yes','Yes'],['no','No'],['unsure','Not sure']]},
+    {id:'sessionDate', type:'session', noStore:true, label:'Which session are you thinking of?',
+      hint:'Pick the Thursday, or "Not sure / other" if it\'s not tied to one session.'},
+  ];
 
-  // ---- session date dropdown: every Thursday from 2026-07-23 up to today ----
-  (function buildSessionOptions(){
-    const sel = document.getElementById('q_sessionDate');
+  // Asked at the end of every survey, remembered.
+  const CONTACT = [
+    {id:'canFollowUp', type:'radio', row:true, label:'Okay if the DM follows up about your answers?',
+      options:[['yes','Yes'],['no','No']]},
+    {id:'contact', type:'text', label:'Best way to reach you (Discord handle, email, etc.)',
+      showIf:{field:'canFollowUp', equals:['yes']}},
+  ];
+
+  // =====================================================================
+  // THE SIX SURVEYS
+  // Questions migrated verbatim from the original combined survey where one
+  // existed. `classes` and `tools` are NEW and marked for review.
+  // =====================================================================
+  const SURVEYS = {
+    chargen: {
+      name:'Character creation',
+      desc:'Making a character start to finish — reading, picking, spending.',
+      title:'Building Your Character',
+      sub:'About making this character, start to finish — reading, picking, spending.',
+      note:'About making this character, start to finish — reading, picking, spending.',
+      questions:[
+        // CONTEXT
+        {id:'ccMethod', type:'check', label:'How did you go about building it? (pick all that apply)',
+          options:[['read_guide','Read the guide myself'],
+                   ['jumped_examples','Copied the shape of a §3 worked example'],
+                   ['dm_walked_through','The DM walked me through it live'],
+                   ['generator_tool','Used the character generator tool'],
+                   ['other_method','Something else']]},
+        // A. CLARITY
+        {id:'ccClarity', type:'scale', label:'How clear was it what to do next, at each step?',
+          low:'Had to guess', high:'Always obvious'},
+        {id:'ccClarityWhat', type:'textarea', label:'Which step lost you?',
+          showIf:{scale:'ccClarity', lte:3}},
+        // B. CAUGHT YOU OUT
+        {id:'ccSurprise', type:'radio', row:true, label:'Did anything turn out to work differently than you expected?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'ccSurpriseImpact', type:'scale', label:'How much did that set you back?',
+          low:'Barely noticed', high:'Had to start over',
+          showIf:{field:'ccSurprise', equals:['yes']}},
+        {id:'ccSurpriseWhat', type:'textarea', label:'What was it, and what did you expect instead?',
+          showIf:{field:'ccSurprise', equals:['yes']}},
+        // C. COULDN'T HAVE
+        {id:'ccBlocked', type:'radio', row:true, label:'Was there anything you wanted for this character that you couldn\'t work out how to get?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'ccBlockedWhat', type:'textarea', label:'What were you after?',
+          showIf:{field:'ccBlocked', equals:['yes']}},
+        // D. FAIRNESS
+        {id:'ccFair', type:'scale', label:'How fair did the AP costs feel while you were building?',
+          low:'Way off', high:'About right'},
+        {id:'ccFairWhat', type:'textarea', label:'What felt mispriced, and which way?',
+          showIf:{scale:'ccFair', lte:3}},
+        // E. FRICTION — the §3 examples are this survey's recurring friction point
+        {id:'ccFriction', type:'scale', label:'How well did the §3 worked examples match what you were trying to build?',
+          low:'Had to improvise', high:'Matched closely'},
+        {id:'ccFrictionWhat', type:'textarea', label:'What was different about your concept?',
+          showIf:{scale:'ccFriction', lte:3}},
+        // G. OVERALL + ONE CHANGE
+        {id:'ccOverall', type:'scale', label:'Overall, how did character creation go?',
+          low:'Painful', high:'Smooth'},
+        {id:'ccOverallWhat', type:'textarea', label:'What made it hard going?',
+          showIf:{scale:'ccOverall', lte:3}},
+        {id:'ccChange', type:'textarea', label:'What single change would improve character creation most?'},
+      ]
+    },
+
+    rules: {
+      name:'The rules in general',
+      desc:'Spending AP during play, looking things up mid-session, anything rules-wide.',
+      title:'The Rules In General',
+      sub:'Spending AP once you\'re actually playing, and how the rules hold up at the table.',
+      note:'Character creation is one thing — this is about buying stuff once you\'re actually playing: levelling up, new features, spells, the works.',
+      questions:[
+        // CONTEXT
+        {id:'ruSpentSince', type:'radio', row:true, label:'Have you spent AP on anything since your character was first created?',
+          options:[['yes','Yes'],['no','Not yet']]},
+        // A. CLARITY
+        {id:'ruClarity', type:'scale', label:'How clear is it what you can buy, or afford, when you get new AP?',
+          low:'No idea, have to ask', high:'Always obvious'},
+        {id:'ruClarityWhat', type:'textarea', label:'What\'s the murkiest part?',
+          showIf:{scale:'ruClarity', lte:3}},
+        // B. CAUGHT YOU OUT
+        {id:'ruSurprise', type:'radio', row:true, label:'Has a rule turned out to work differently than you expected?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'ruSurpriseImpact', type:'scale', label:'How much trouble did that cause?',
+          low:'Barely noticed', high:'Changed how the character plays',
+          showIf:{field:'ruSurprise', equals:['yes']}},
+        {id:'ruSurpriseWhat', type:'textarea', label:'Which rule, and what did you expect instead?',
+          showIf:{field:'ruSurprise', equals:['yes']}},
+        // C. COULDN'T HAVE
+        {id:'ruBlocked', type:'radio', row:true, label:'Have you wanted to do something the rules wouldn\'t let you?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'ruBlockedWhat', type:'textarea', label:'What were you trying to do?',
+          showIf:{field:'ruBlocked', equals:['yes']}},
+        // D. FAIRNESS
+        {id:'ruFair', type:'scale', label:'How fair do AP costs feel for what you get?',
+          low:'Way off', high:'About right'},
+        {id:'ruFairWhat', type:'textarea', label:'What felt mispriced, and which way?',
+          showIf:{scale:'ruFair', lte:3}},
+        // E. FRICTION — finding a rule mid-session is this survey's recurring friction
+        {id:'ruFriction', type:'scale', label:'When you need a rule mid-session, how easy is it to actually find?',
+          low:'Can never find it', high:'Straight to it'},
+        {id:'ruFrictionWhat', type:'textarea', label:'What were you last hunting for?',
+          showIf:{scale:'ruFriction', lte:3}},
+        // G. OVERALL + ONE CHANGE
+        {id:'ruOverall', type:'scale', label:'Overall, how well are the rules working for you at the table?',
+          low:'Not working', high:'Working really well'},
+        {id:'ruOverallWhat', type:'textarea', label:'What\'s getting in the way?',
+          showIf:{scale:'ruOverall', lte:3}},
+        {id:'ruChange', type:'textarea', label:'What single change would improve the rules most?'},
+      ]
+    },
+
+    spellcasting: {
+      name:'Spellcasting',
+      desc:'Foundation, Rank, Tradition, slots, spells known.',
+      title:'Spellcasting',
+      sub:'Foundation, Rank, Tradition, slots, spells known — the parts of PACT\'s magic system.',
+      note:'Foundation, Rank, Tradition, slots, spells known — the parts of PACT\'s magic system.',
+      castersOnly:true,
+      questions:[
+        // A. CLARITY — the checklist IS the description, and beats free text as a diagnostic
+        {id:'spClarity', type:'scale', label:'How clear is the spellcasting stack overall — Foundation, Rank, slots, spells known?',
+          low:'Had to guess', high:'Always obvious'},
+        {id:'spClarityWhat', type:'check', label:'Which parts were confusing? (pick all that apply)',
+          options:[['foundation','Spellcasting Foundation — what it actually unlocks'],
+                   ['rank','Spellcasting Rank — how it relates to your Hit Dice'],
+                   ['hd_gate','The Hit-Dice gate for spell levels ("a 2nd-level spell needs 3 Hit Dice")'],
+                   ['slots_vs_known','Spell slots vs. spells known — that they\'re two different things'],
+                   ['tradition_discipline','Tradition vs. Discipline — the difference between the two'],
+                   ['cantrips','Cantrips — innate dabbling vs. Foundation-backed cantrips'],
+                   ['multiclass','Adding a second Discipline or Tradition later']],
+          showIf:{scale:'spClarity', lte:3}},
+        // B. CAUGHT YOU OUT
+        {id:'spSurprise', type:'radio', row:true, label:'Has a spell or spellcasting rule worked differently than you expected?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'spSurpriseImpact', type:'scale', label:'How much trouble did that cause?',
+          low:'Barely noticed', high:'Wasted a whole turn or slot',
+          showIf:{field:'spSurprise', equals:['yes']}},
+        {id:'spSurpriseWhat', type:'textarea', label:'What were you casting, and what did you expect instead?',
+          showIf:{field:'spSurprise', equals:['yes']}},
+        // C. COULDN'T HAVE
+        {id:'spBlocked', type:'radio', row:true, label:'Have you wanted a spell or casting option you couldn\'t work out how to get?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'spBlockedWhat', type:'textarea', label:'What were you after?',
+          showIf:{field:'spBlocked', equals:['yes']}},
+        // D. FAIRNESS
+        {id:'spFair', type:'scale', label:'How fair do spellcasting costs feel for what you get?',
+          low:'Way off', high:'About right'},
+        {id:'spFairWhat', type:'textarea', label:'What felt mispriced, and which way?',
+          showIf:{scale:'spFair', lte:3}},
+        // E. FRICTION
+        {id:'spFriction', type:'scale', label:'How confident are you explaining the difference between a spell slot and a spell known?',
+          low:'Not confident', high:'Very confident'},
+        {id:'spFrictionWhat', type:'textarea', label:'What still doesn\'t sit right about it?',
+          showIf:{scale:'spFriction', lte:3}},
+        // G. OVERALL + ONE CHANGE
+        {id:'spOverall', type:'scale', label:'Overall, how well is spellcasting working for you?',
+          low:'Not working', high:'Working really well'},
+        {id:'spOverallWhat', type:'textarea', label:'What\'s getting in the way?',
+          showIf:{scale:'spOverall', lte:3}},
+        {id:'spChange', type:'textarea', label:'What single change would improve spellcasting most?'},
+      ]
+    },
+
+    classes: {
+      name:'Class abilities',
+      desc:'The class feature menus — what you bought, what you skipped, what surprised you.',
+      title:'Class Abilities',
+      sub:'PACT turns each class into a menu of features you buy with AP. This is about that menu.',
+      note:'PACT turns each class into a menu of features you buy with AP, rather than handing them out by level. This is about how that menu reads and plays.',
+      questions:[
+        // A. CLARITY
+        {id:'clClarity', type:'scale', label:'How clear is it what each class feature actually does when you\'re deciding whether to buy it?',
+          low:'Had to guess', high:'Always obvious'},
+        {id:'clClarityWhat', type:'textarea', label:'Which features were hardest to work out?',
+          showIf:{scale:'clClarity', lte:3}},
+        // B. CAUGHT YOU OUT
+        {id:'clSurprise', type:'radio', row:true, label:'Have you bought a class feature that turned out to work differently than you expected?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'clSurpriseImpact', type:'scale', label:'How much did that throw your character?',
+          low:'Barely noticed', high:'Had to rethink the build',
+          showIf:{field:'clSurprise', equals:['yes']}},
+        {id:'clSurpriseWhat', type:'textarea', label:'Which feature, and what did you expect it to do?',
+          showIf:{field:'clSurprise', equals:['yes']}},
+        // C. COULDN'T HAVE
+        {id:'clBlocked', type:'radio', row:true, label:'Is there a class feature you really wanted but skipped because of the AP price?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'clBlockedWhat', type:'textarea', label:'Which one — and what did you buy instead?',
+          showIf:{field:'clBlocked', equals:['yes']}},
+        // D. FAIRNESS
+        {id:'clFair', type:'scale', label:'How fair do class feature prices feel for what you get?',
+          low:'Way off', high:'About right'},
+        {id:'clFairWhat', type:'textarea', label:'Which features felt mispriced, and which way — too dear, too cheap, or the escalating cost?',
+          showIf:{scale:'clFair', lte:3}},
+        // E. FRICTION
+        {id:'clFriction', type:'scale', label:'How clear are a feature\'s prerequisites before you commit AP to it?',
+          low:'Found out the hard way', high:'Always clear upfront'},
+        {id:'clFrictionWhat', type:'textarea', label:'Anything you misread and had to undo?',
+          showIf:{scale:'clFriction', lte:3}},
+        // F. IDENTITY — unique to this survey, but follows the same rating+conditional shape
+        {id:'clIdentity', type:'scale', label:'Does your character still feel like the class you picked, given you chose the features yourself?',
+          low:'Feels generic', high:'Very much so'},
+        {id:'clIdentityWhat', type:'textarea', label:'What\'s making it feel generic?',
+          showIf:{scale:'clIdentity', lte:3}},
+        // G. OVERALL + ONE CHANGE
+        {id:'clOverall', type:'scale', label:'Overall, how well are the class feature menus working for you?',
+          low:'Not working', high:'Working really well'},
+        {id:'clOverallWhat', type:'textarea', label:'What\'s getting in the way?',
+          showIf:{scale:'clOverall', lte:3}},
+        {id:'clChange', type:'textarea', label:'What single change would improve class features most?'},
+      ]
+    },
+
+    campaign: {
+      name:'The campaign',
+      desc:'How the game itself is landing — pacing, spotlight, last session.',
+      title:'Campaign Feedback',
+      sub:'Nothing to do with rules or character-building — just how the campaign itself is landing.',
+      note:'Nothing to do with rules or character-building — just how the campaign itself is landing.',
+      questions:[
+        // A. LAST SESSION — this survey's "how did it go", four facets of one sitting
+        {id:'cmClarity', type:'scale', label:'How was last session?', low:'Rough one', high:'One of the best'},
+        {id:'cmClarityWhat', type:'textarea', label:'What made it a rough one?',
+          showIf:{scale:'cmClarity', lte:3}},
+        {id:'cmPacing', type:'scale', label:'How was the pacing?', low:'Dragged', high:'Flew by'},
+        {id:'cmChallenge', type:'scale', label:'How satisfying were the challenges and encounters?',
+          low:'Not great', high:'Really satisfying'},
+        {id:'cmRoleplay', type:'scale', label:'How satisfying were the roleplay and story moments?',
+          low:'Not great', high:'Really satisfying'},
+        // E. FRICTION — spotlight is the recurring thing worth tracking session to session
+        {id:'cmFriction', type:'scale', label:'How much spotlight and agency did you feel you had?',
+          low:'Barely any', high:'Plenty'},
+        {id:'cmFrictionWhat', type:'textarea', label:'Where did you feel sidelined?',
+          showIf:{scale:'cmFriction', lte:3}},
+        // B. CAUGHT YOU OUT
+        {id:'cmSurprise', type:'radio', row:true, label:'Did anything last session not land the way you hoped?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'cmSurpriseWhat', type:'textarea', label:'What was it?',
+          showIf:{field:'cmSurprise', equals:['yes']}},
+        // C. COULDN'T HAVE
+        {id:'cmBlocked', type:'radio', row:true, label:'Was there something you wanted to do in the story that you couldn\'t?',
+          options:[['yes','Yes'],['no','No']]},
+        {id:'cmBlockedWhat', type:'textarea', label:'What were you hoping to do?',
+          showIf:{field:'cmBlocked', equals:['yes']}},
+        // G. OVERALL + ONE CHANGE
+        {id:'cmOverall', type:'scale', label:'Overall, how\'s the campaign going for you?',
+          low:'Not feeling it', high:'Loving it'},
+        {id:'cmOverallWhat', type:'textarea', label:'What\'s not landing?',
+          showIf:{scale:'cmOverall', lte:3}},
+        {id:'cmChange', type:'textarea', label:'What single change would improve the campaign most?'},
+      ]
+    },
+
+    tools: {
+      name:'The character tools',
+      desc:'The character generator, live sheet, and anything else you build or track with.',
+      title:'The Character Tools',
+      sub:'The character generator and the other HTML tools — whether they help or get in the way.',
+      note:'The character generator, live character sheet and friends. Only answer for the ones you\'ve actually used.',
+      questions:[
+        // CONTEXT — and the one question a non-user should get instead of the whole survey
+        {id:'toUsed', type:'check', label:'Which have you actually used? (pick all that apply)',
+          options:[['generator','The character generator'],
+                   ['live_sheet','The live character sheet'],
+                   ['none_tools','None of them — I do it by hand or in the guide']]},
+        {id:'toNotUsedWhy', type:'textarea', label:'What\'s kept you from using them?',
+          showIf:{field:'toUsed', equals:['none_tools']}},
+        // A. CLARITY
+        {id:'toClarity', type:'scale', label:'How easy were they to use?', low:'Fought me the whole way', high:'Effortless',
+          showIf:{field:'toUsed', equals:['generator','live_sheet']}},
+        {id:'toClarityWhat', type:'textarea', label:'What got in the way?',
+          showIf:{scale:'toClarity', lte:3}},
+        // B. CAUGHT YOU OUT
+        {id:'toSurprise', type:'radio', label:'Did the tool\'s numbers ever disagree with what the guide says?',
+          options:[['yes','Yes, I hit a mismatch'],['no','No, they always matched'],['didnt_check','I didn\'t check']],
+          showIf:{field:'toUsed', equals:['generator','live_sheet']}},
+        {id:'toSurpriseImpact', type:'scale', label:'How much trouble did that cause?',
+          low:'Barely noticed', high:'Had to rebuild the character',
+          showIf:{field:'toSurprise', equals:['yes']}},
+        {id:'toSurpriseWhat', type:'textarea', label:'What disagreed? (a cost, a prerequisite, a total — whatever you saw)',
+          showIf:{field:'toSurprise', equals:['yes']}},
+        // C. COULDN'T HAVE
+        {id:'toBlocked', type:'radio', row:true, label:'Was there something you wanted to build that the tool wouldn\'t let you?',
+          options:[['yes','Yes'],['no','No']],
+          showIf:{field:'toUsed', equals:['generator','live_sheet']}},
+        {id:'toBlockedWhat', type:'textarea', label:'What were you trying to build?',
+          showIf:{field:'toBlocked', equals:['yes']}},
+        // D. TRUST — the tools' analogue of "does the price feel fair"
+        {id:'toFair', type:'scale', label:'How much do you trust the tool\'s numbers without checking them against the guide?',
+          low:'Always double-check', high:'Trust them completely',
+          showIf:{field:'toUsed', equals:['generator','live_sheet']}},
+        {id:'toFairWhat', type:'textarea', label:'What would make you trust them more?',
+          showIf:{scale:'toFair', lte:3}},
+        // E. FRICTION
+        {id:'toFriction', type:'scale', label:'How reliable have they been — no crashes, blank screens, or lost work?',
+          low:'Broke on me repeatedly', high:'Never missed a beat',
+          showIf:{field:'toUsed', equals:['generator','live_sheet']}},
+        {id:'toFrictionWhat', type:'textarea', label:'What went wrong, and what were you doing at the time?',
+          showIf:{scale:'toFriction', lte:3}},
+        // G. OVERALL + ONE CHANGE
+        {id:'toOverall', type:'scale', label:'Overall, how well are the tools working for you?',
+          low:'Not working', high:'Working really well',
+          showIf:{field:'toUsed', equals:['generator','live_sheet']}},
+        {id:'toOverallWhat', type:'textarea', label:'What\'s getting in the way?',
+          showIf:{scale:'toOverall', lte:3}},
+        {id:'toChange', type:'textarea', label:'What single change would make the tools most useful to you?',
+          showIf:{field:'toUsed', equals:['generator','live_sheet']}},
+      ]
+    },
+  };
+
+  const ORDER = ['chargen','rules','spellcasting','classes','campaign','tools'];
+
+  // =====================================================================
+  // storage helpers — all wrapped, because a device with storage disabled
+  // must still be able to fill in and submit a survey.
+  // =====================================================================
+  function readJSON(key, fallback){
+    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+    catch (e) { return fallback; }
+  }
+  function writeJSON(key, value){
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* storage off; not fatal */ }
+  }
+  let profile = readJSON(PROFILE_KEY, {});
+  let done = readJSON(DONE_KEY, {});
+
+  // =====================================================================
+  // rendering
+  // =====================================================================
+  const scales = {};
+
+  function el(html){ const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function renderQuestion(q){
+    const wrap = document.createElement('div');
+    wrap.className = 'ps-q';
+    wrap.dataset.qid = q.id;
+    if (q.showIf) wrap.style.display = 'none';
+
+    const labelTag = (q.type === 'text' || q.type === 'number' || q.type === 'textarea' || q.type === 'session')
+      ? '<label class="ps-qlabel" for="q_' + q.id + '">' + esc(q.label) + '</label>'
+      : '<span class="ps-qlabel">' + esc(q.label) + '</span>';
+    wrap.insertAdjacentHTML('beforeend', labelTag);
+    if (q.hint) wrap.insertAdjacentHTML('beforeend', '<p class="ps-hint">' + esc(q.hint) + '</p>');
+
+    if (q.type === 'text' || q.type === 'number'){
+      const attrs = q.type === 'number'
+        ? ' type="number"' + (q.min != null ? ' min="' + q.min + '"' : '') + (q.max != null ? ' max="' + q.max + '"' : '')
+        : ' type="text"' + (q.placeholder ? ' placeholder="' + esc(q.placeholder) + '"' : '');
+      wrap.insertAdjacentHTML('beforeend', '<input id="q_' + q.id + '" name="' + q.id + '"' + attrs + '>');
+    } else if (q.type === 'textarea'){
+      wrap.insertAdjacentHTML('beforeend', '<textarea id="q_' + q.id + '" name="' + q.id + '"></textarea>');
+    } else if (q.type === 'session'){
+      wrap.insertAdjacentHTML('beforeend', '<select id="q_' + q.id + '" name="' + q.id + '"></select>');
+    } else if (q.type === 'radio' || q.type === 'check'){
+      const kind = q.type === 'radio' ? 'radio' : 'checkbox';
+      const box = document.createElement('div');
+      box.className = 'ps-choices' + (q.row ? ' ps-row' : '');
+      q.options.forEach(function(o){
+        box.insertAdjacentHTML('beforeend',
+          '<label class="ps-choice"><input type="' + kind + '" name="' + q.id + '" value="' + esc(o[0]) + '"> ' + esc(o[1]) + '</label>');
+      });
+      wrap.appendChild(box);
+    } else if (q.type === 'scale'){
+      const box = document.createElement('div');
+      box.className = 'ps-scale';
+      box.dataset.scale = q.id;
+      for (let v = 1; v <= 5; v++){
+        box.insertAdjacentHTML('beforeend', '<button type="button" data-val="' + v + '">' + v + '</button>');
+      }
+      wrap.appendChild(box);
+      wrap.insertAdjacentHTML('beforeend',
+        '<div class="ps-scale-labels"><span>' + esc(q.low || '') + '</span><span>' + esc(q.high || '') + '</span></div>');
+    }
+    return wrap;
+  }
+
+  function renderInto(container, questions){
+    // pair adjacent half-width fields (race1/race2, class1/class2) into one row
+    let i = 0;
+    while (i < questions.length){
+      const q = questions[i];
+      const next = questions[i+1];
+      if (q.pair && next && next.pair === q.pair){
+        const row = document.createElement('div');
+        row.className = 'ps-q ps-row2';
+        const a = document.createElement('div'), b = document.createElement('div');
+        a.appendChild(renderQuestion(q)); b.appendChild(renderQuestion(next));
+        a.firstChild.style.marginBottom = '0'; b.firstChild.style.marginBottom = '0';
+        row.appendChild(a); row.appendChild(b);
+        container.appendChild(row);
+        i += 2;
+      } else {
+        container.appendChild(renderQuestion(q));
+        i += 1;
+      }
+    }
+  }
+
+  function buildSessionOptions(sel){
     const start = new Date(2026, 6, 23); // 23 Jul 2026, a Thursday
     const today = new Date();
-    today.setHours(0,0,0,0);
-    start.setHours(0,0,0,0);
+    today.setHours(0,0,0,0); start.setHours(0,0,0,0);
     const opts = [];
     let d = new Date(start);
     while (d <= today) { opts.push(new Date(d)); d.setDate(d.getDate() + 7); }
     if (!opts.length) opts.push(start);
-
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = 'Select a session…';
-    sel.appendChild(placeholder);
-
-    opts.forEach((dt, i) => {
+    sel.appendChild(el('<option value="">Select a session…</option>'));
+    opts.forEach(function(dt, i){
       const opt = document.createElement('option');
-      const iso = dt.toISOString().slice(0,10);
-      opt.value = iso;
+      opt.value = dt.toISOString().slice(0,10);
       opt.textContent = dt.toLocaleDateString('en-AU', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
-      if (i === opts.length - 1) opt.selected = true; // default to most recent Thursday
+      if (i === opts.length - 1) opt.selected = true;
       sel.appendChild(opt);
     });
+    sel.appendChild(el('<option value="other">Not sure / other</option>'));
+  }
 
-    const other = document.createElement('option');
-    other.value = 'other';
-    other.textContent = 'Not sure / other';
-    sel.appendChild(other);
-  })();
-
-  function renderProgress(){
-    progressEl.innerHTML = '';
-    steps.forEach((s, i) => {
-      if (i === SPELLCASTING_STEP && skipSpellcasting) return;
-      const t = document.createElement('div');
-      t.className = 'ps-tick' + (i < stepIdx ? ' done' : (i === stepIdx ? ' active' : ''));
-      progressEl.appendChild(t);
+  // =====================================================================
+  // conditional reveal — a question with showIf watches another field
+  // =====================================================================
+  function currentValues(form){
+    const out = {};
+    Array.from(form.elements).forEach(function(inp){
+      if (!inp.name) return;
+      if (inp.type === 'radio'){ if (inp.checked) out[inp.name] = inp.value; }
+      else if (inp.type === 'checkbox'){ if (inp.checked) (out[inp.name] = out[inp.name] || []).push(inp.value); }
+      else out[inp.name] = inp.value;
     });
+    return out;
   }
 
-  function goToStep(i){
-    steps.forEach(s => s.classList.remove('active'));
-    const target = steps.find(s => Number(s.dataset.step) === i);
-    if (target) { target.classList.add('active'); stepIdx = i; }
-    renderProgress();
-    root.scrollIntoView({behavior:'smooth', block:'start'});
-  }
-
-  root.querySelectorAll('[data-next]').forEach(btn => btn.addEventListener('click', () => {
-    let next = stepIdx + 1;
-    if (next === SPELLCASTING_STEP && skipSpellcasting) next = SPELLCASTING_STEP + 1;
-    if (next > LAST_STEP) next = LAST_STEP;
-    goToStep(next);
-  }));
-  root.querySelectorAll('[data-back]').forEach(btn => btn.addEventListener('click', () => {
-    let prev = stepIdx - 1;
-    if (prev === SPELLCASTING_STEP && skipSpellcasting) prev = SPELLCASTING_STEP - 1;
-    if (prev < 0) prev = 0;
-    goToStep(prev);
-  }));
-
-  form.querySelectorAll('input[name=hasCaster]').forEach(r => r.addEventListener('change', () => {
-    skipSpellcasting = (r.value === 'no') && r.checked;
-    renderProgress();
-  }));
-
-  function bindReveal(radioName, wantValue, wrapId){
-    const wrap = document.getElementById(wrapId);
-    form.querySelectorAll('input[name=' + radioName + ']').forEach(r => {
-      r.addEventListener('change', () => {
-        wrap.style.display = (r.value === wantValue && r.checked) ? 'block' : 'none';
-      });
-    });
-  }
-  bindReveal('hadToAsk', 'yes', 'stuckWrap');
-  form.querySelectorAll('input[name=examplesMatch]').forEach(r => r.addEventListener('change', () => {
-    const w = document.getElementById('examplesDiffWrap');
-    w.style.display = (r.checked && (r.value === 'somewhat' || r.value === 'not_really')) ? 'block' : 'none';
-  }));
-  bindReveal('apSpendStuck', 'yes', 'apSpendStuckWrap');
-  bindReveal('midSessionLookup', 'yes', 'lookupWrap');
-  bindReveal('canFollowUp', 'yes', 'contactWrap');
-
-  root.querySelectorAll('[data-scale]').forEach(group => {
-    const key = group.dataset.scale;
-    group.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
-      group.querySelectorAll('button').forEach(x => x.classList.remove('sel'));
-      b.classList.add('sel');
-      answers.scales[key] = Number(b.dataset.val);
-    }));
-  });
-
-  function genId(){
-    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-    return 'r' + Date.now() + Math.random().toString(16).slice(2);
-  }
-
-  form.addEventListener('submit', async function(e){
-    e.preventDefault();
-    const submitBtn = document.getElementById('psSubmitBtn');
-    const errEl = document.getElementById('psSubmitError');
-    errEl.style.display = 'none';
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending…';
-
-    const fd = new FormData(form);
-    const record = { id: genId(), timestamp: new Date().toISOString() };
-    ['player','race1','race2','class1','class2','level','sessionDate','sessionsPlayed','stuckStep',
-     'examplesDiff','onboardingFree','apSpendStuckWhat','apSpendFree','lookupWhat','casterFree',
-     'campaignFreeText','contact'].forEach(k => {
-      record[k] = (fd.get(k) || '').toString().trim();
-    });
-    ['hasCaster','guideOrGenerator','hadToAsk','hdClear','examplesMatch','spentSince','apSpendStuck',
-     'midSessionLookup','canFollowUp'].forEach(k => { record[k] = fd.get(k) || ''; });
-    ['buildMethod','slowStep','casterConfusion'].forEach(k => { record[k] = fd.getAll(k); });
-    record.smoothness = answers.scales.smoothness || null;
-    record.apSpendClarity = answers.scales.apSpendClarity || null;
-    record.slotKnownConfidence = answers.scales.slotKnownConfidence || null;
-    record.campaignOverall = answers.scales.campaignOverall || null;
-    record.lastSessionRating = answers.scales.lastSessionRating || null;
-    record.lastSessionPacing = answers.scales.lastSessionPacing || null;
-    record.lastSessionChallenge = answers.scales.lastSessionChallenge || null;
-    record.lastSessionRoleplay = answers.scales.lastSessionRoleplay || null;
-    record.lastSessionSpotlight = answers.scales.lastSessionSpotlight || null;
-    record.campaignEngagement = answers.scales.campaignEngagement || null;
-    record.skippedSpellcasting = skipSpellcasting;
-    record._subject = 'PACT survey response — ' +
-      ([record.player, record.class1].filter(Boolean).join(', ') || 'anonymous');
-
-    try {
-      if (FORMSPREE_ENDPOINT.indexOf('REPLACE_ME') !== -1) {
-        throw new Error('This copy of the survey has no submission address configured yet — tell the DM.');
+  // A question may be shown conditionally on either:
+  //   {field:'someRadio', equals:['yes']}   — another radio/checkbox answer, or
+  //   {scale:'someScale', lte:3}            — a 1-5 rating coming in at or below a threshold.
+  // The second form is what keeps these surveys short: the "what went wrong" box only
+  // appears for someone whose rating says something did.
+  function applyReveals(form, questions){
+    const vals = currentValues(form);
+    questions.forEach(function(q){
+      if (!q.showIf) return;
+      const wrap = form.querySelector('[data-qid="' + q.id + '"]');
+      if (!wrap) return;
+      let show = false;
+      if (q.showIf.scale){
+        const rating = scales[q.showIf.scale];
+        show = (rating != null) && (rating <= q.showIf.lte);
+      } else {
+        const v = vals[q.showIf.field];
+        if (Array.isArray(v)) show = v.some(function(x){ return q.showIf.equals.indexOf(x) !== -1; });
+        else if (v != null) show = q.showIf.equals.indexOf(v) !== -1;
       }
-      const res = await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(record)
+      wrap.style.display = show ? 'block' : 'none';
+    });
+  }
+
+  // =====================================================================
+  // routing
+  // =====================================================================
+  function getParam(name){
+    const m = new RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return m ? decodeURIComponent(m[1].replace(/\+/g,' ')) : null;
+  }
+
+  const hubEl = document.getElementById('psHub');
+  const surveyEl = document.getElementById('psSurvey');
+
+  function showHub(){
+    surveyEl.style.display = 'none';
+    hubEl.style.display = 'block';
+    const list = document.getElementById('psHubList');
+    list.innerHTML = '';
+
+    const known = document.getElementById('psHubKnown');
+    if (profile.player || profile.class1){
+      known.style.display = 'block';
+      known.innerHTML = 'Filling in as <strong>' + esc(profile.player || 'your character') + '</strong>' +
+        (profile.class1 ? ' — ' + esc([profile.class1, profile.class2].filter(Boolean).join('/')) : '') +
+        (profile.level ? ', level ' + esc(profile.level) : '') +
+        ' &nbsp;<button type="button" id="psForget">Not you?</button>';
+      document.getElementById('psForget').addEventListener('click', function(){
+        profile = {}; writeJSON(PROFILE_KEY, profile); showHub();
       });
-      if (!res.ok) {
-        let detail = 'HTTP ' + res.status;
-        try {
-          const data = await res.json();
-          if (data && data.errors) detail = data.errors.map(x => x.message).join('; ');
-        } catch (ignore) {}
-        throw new Error(detail);
-      }
-      document.getElementById('psForm').style.display = 'none';
-      document.getElementById('psThanks').style.display = 'block';
-    } catch (err) {
-      errEl.textContent = 'Could not send: ' + (err && err.message ? err.message : String(err)) +
-        ' — your answers are still on this page, try Send again or screenshot them for the DM.';
-      errEl.style.display = 'block';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Send it';
+    } else {
+      known.style.display = 'none';
     }
-  });
 
-  document.getElementById('psAnotherBtn').addEventListener('click', () => {
-    form.reset();
-    answers.scales = {};
-    root.querySelectorAll('.ps-scale button.sel').forEach(b => b.classList.remove('sel'));
-    root.querySelectorAll('[id$=Wrap]').forEach(w => w.style.display = 'none');
-    skipSpellcasting = false;
-    document.getElementById('psForm').style.display = 'block';
-    document.getElementById('psThanks').style.display = 'none';
-    goToStep(0);
-  });
+    ORDER.forEach(function(key){
+      const s = SURVEYS[key];
+      // conditional: hide the caster-only survey for a character flagged as non-caster
+      if (s.castersOnly && profile.hasCaster === 'no') return;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ps-hub-item' + (done[key] ? ' ps-done' : '');
+      btn.innerHTML = '<span class="ps-hub-name">' + esc(s.name) + '</span>' +
+        '<span class="ps-hub-desc">' + esc(s.desc) + '</span>' +
+        (done[key] ? '<span class="ps-hub-flag">Already sent — you can send another</span>' : '');
+      btn.addEventListener('click', function(){
+        window.location.search = '?s=' + key;
+      });
+      list.appendChild(btn);
+    });
+  }
 
-  renderProgress();
+  function showSurvey(key){
+    const s = SURVEYS[key];
+    hubEl.style.display = 'none';
+    surveyEl.style.display = 'block';
 
-} catch (setupErr) {
-  const box = document.createElement('div');
-  box.style.cssText = 'max-width:640px;margin:16px auto;padding:16px;background:#ffd6d6;' +
-    'color:#8a0000;border:3px solid #8a0000;border-radius:10px;font-family:sans-serif;' +
-    'font-size:1rem;font-weight:700;white-space:pre-wrap;word-break:break-word;';
-  box.textContent = 'PAGE SETUP ERROR (send this to your dev):\n' +
-    (setupErr && setupErr.message ? setupErr.message : String(setupErr)) +
-    (setupErr && setupErr.stack ? '\n\n' + setupErr.stack : '');
-  document.body.insertBefore(box, document.body.firstChild);
+    document.title = 'PACT — ' + s.name;
+    document.getElementById('psTitle').textContent = s.title;
+    document.getElementById('psSub').textContent = s.sub;
+    document.getElementById('psSurveyHeading').textContent = s.title;
+    document.getElementById('psSurveyNote').textContent = s.note;
+    document.getElementById('psStep0Next').textContent = 'Next: ' + s.name + ' →';
+
+    const form = document.getElementById('psForm');
+    const commonBox = document.getElementById('psCommonFields');
+    const surveyBox = document.getElementById('psSurveyFields');
+
+    renderInto(commonBox, COMMON);
+    renderInto(surveyBox, s.questions);
+    renderInto(surveyBox, CONTACT);
+
+    const sessionSel = form.querySelector('#q_sessionDate');
+    if (sessionSel) buildSessionOptions(sessionSel);
+
+    // prefill remembered values
+    const allQ = COMMON.concat(s.questions, CONTACT);
+    COMMON.concat(CONTACT).forEach(function(q){
+      if (q.noStore) return;
+      const v = profile[q.id];
+      if (v == null || v === '') return;
+      if (q.type === 'radio'){
+        const r = form.querySelector('input[name="' + q.id + '"][value="' + v + '"]');
+        if (r) r.checked = true;
+      } else {
+        const inp = form.querySelector('#q_' + q.id);
+        if (inp) inp.value = v;
+      }
+    });
+
+    // scale buttons
+    form.querySelectorAll('[data-scale]').forEach(function(group){
+      const k = group.dataset.scale;
+      group.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click', function(){
+          group.querySelectorAll('button').forEach(function(x){ x.classList.remove('sel'); });
+          b.classList.add('sel');
+          scales[k] = Number(b.dataset.val);
+          applyReveals(form, allQ);   // a low rating may reveal its follow-up
+        });
+      });
+    });
+
+    form.addEventListener('change', function(){ applyReveals(form, allQ); });
+    form.addEventListener('input', function(){ applyReveals(form, allQ); });
+    applyReveals(form, allQ);
+
+    // ---- step navigation (2 steps: common, then the survey) ----
+    const steps = Array.from(form.querySelectorAll('.ps-step'));
+    const progressEl = document.getElementById('psProgress');
+    let stepIdx = 0;
+    function renderProgress(){
+      progressEl.innerHTML = '';
+      steps.forEach(function(_, i){
+        const t = document.createElement('div');
+        t.className = 'ps-tick' + (i < stepIdx ? ' done' : (i === stepIdx ? ' active' : ''));
+        progressEl.appendChild(t);
+      });
+    }
+    function goToStep(i){
+      steps.forEach(function(x){ x.classList.remove('active'); });
+      const target = steps.find(function(x){ return Number(x.dataset.step) === i; });
+      if (target){ target.classList.add('active'); stepIdx = i; }
+      renderProgress();
+      document.getElementById('psRoot').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+    form.querySelectorAll('[data-next]').forEach(function(b){
+      b.addEventListener('click', function(){ saveProfile(form); goToStep(Math.min(stepIdx + 1, steps.length - 1)); });
+    });
+    form.querySelectorAll('[data-back]').forEach(function(b){
+      b.addEventListener('click', function(){ goToStep(Math.max(stepIdx - 1, 0)); });
+    });
+    renderProgress();
+
+    // ---- remember the common fields on this device ----
+    function saveProfile(f){
+      const vals = currentValues(f);
+      COMMON.concat(CONTACT).forEach(function(q){
+        if (q.noStore) return;
+        if (vals[q.id] != null && vals[q.id] !== '') profile[q.id] = vals[q.id];
+      });
+      writeJSON(PROFILE_KEY, profile);
+    }
+
+    // ---- submit ----
+    function genId(){
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'r' + Date.now() + Math.random().toString(16).slice(2);
+    }
+
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      const submitBtn = document.getElementById('psSubmitBtn');
+      const errEl = document.getElementById('psSubmitError');
+      errEl.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      saveProfile(form);
+      const vals = currentValues(form);
+      const record = { id: genId(), timestamp: new Date().toISOString(), survey: key, surveyName: s.name };
+      allQ.forEach(function(q){
+        if (q.type === 'scale') record[q.id] = scales[q.id] != null ? scales[q.id] : null;
+        else record[q.id] = vals[q.id] != null ? vals[q.id] : (q.type === 'check' ? [] : '');
+      });
+      record._subject = 'PACT ' + s.name + ' — ' +
+        ([record.player, record.class1].filter(Boolean).join(', ') || 'anonymous');
+
+      try {
+        if (FORMSPREE_ENDPOINT.indexOf('REPLACE_ME') !== -1){
+          throw new Error('This copy of the survey has no submission address configured yet — tell the DM.');
+        }
+        const res = await fetch(FORMSPREE_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(record)
+        });
+        if (!res.ok){
+          let detail = 'HTTP ' + res.status;
+          try {
+            const data = await res.json();
+            if (data && data.errors) detail = data.errors.map(function(x){ return x.message; }).join('; ');
+          } catch (ignore) {}
+          throw new Error(detail);
+        }
+        done[key] = new Date().toISOString();
+        writeJSON(DONE_KEY, done);
+        form.style.display = 'none';
+        document.getElementById('psProgress').style.display = 'none';
+        document.getElementById('psThanks').style.display = 'block';
+      } catch (err) {
+        errEl.textContent = 'Could not send: ' + (err && err.message ? err.message : String(err)) +
+          ' — your answers are still on this page, try Send again or screenshot them for the DM.';
+        errEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send it';
+      }
+    });
+
+    document.getElementById('psHubBtn').addEventListener('click', function(){
+      window.location.search = '';
+    });
+  }
+
+  // ---- go ----
+  const requested = getParam('s');
+  if (requested && SURVEYS[requested]) showSurvey(requested);
+  else showHub();
+
+} catch (err) {
+  document.body.insertAdjacentHTML('beforeend',
+    '<p style="color:#8a0000;background:#ffd6d6;border:2px solid #8a0000;padding:14px;margin:16px;' +
+    'border-radius:8px;font-weight:700;">This survey hit an error and can\'t load: ' +
+    (err && err.message ? err.message : String(err)) + ' — please tell the DM.</p>');
 }
 })();
 </script>

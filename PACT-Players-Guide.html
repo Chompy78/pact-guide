@@ -1155,4 +1155,9 @@ No slots — buy any when prereq met. See §14.</td><td style="background:#FBF5E
  toTop&&toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
  update();
 })();
-</script></body></html>
+</script>
+<!-- Occasional, dismissible feedback prompt. Picks the survey matching the section being read;
+     never shown for a survey already sent, and at most once a week per topic. Harmless if the
+     file is opened locally or the survey page is unreachable. -->
+<script src="survey/survey-prompt.js" data-survey="auto" defer></script>
+</body></html>
