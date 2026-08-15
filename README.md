@@ -41,6 +41,6 @@ DM's call to make unilaterally, so they stay in the private working repo.
 
 ## Licensing
 
-Not yet finalised — until a licence lands here, the guide and design documents are
-copyright the author, shared for reading and feedback. If you'd like to build on PACT
-beyond that, open a Discussion and ask.
+The guide and design documents are licensed under
+**[CC BY-NC-SA 4.0](LICENSE.md)** — share and remix freely, with credit, non-commercially,
+under the same licence. See [LICENSE.md](LICENSE.md) for the full terms.
