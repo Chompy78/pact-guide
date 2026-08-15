@@ -132,7 +132,18 @@ Last Updated: 2026-08-13
 
 ### Set up a public GitHub repo for community sharing
 - Tags: docs tooling onboarding
-- Status: open
+- Status: open — **substantially done 2026-08-13** (Claude Code session): the repo is
+  `Chompy78/pact-guide-public` (public, personal account — created by John, populated by the session,
+  renamed 2026-08-15 from `pact-guide` to avoid confusion with this project's own private-mirror
+  namesake), containing all four items plus a GitHub Pages landing page; Issues/Discussions enabled;
+  Pages live and verified (HTTP 200) at `https://chompy78.github.io/pact-guide-public/` (landing),
+  `.../survey/`, and
+  `.../PACT-Players-Guide.html`. The three design docs went up as verbatim snapshot copies
+  (periodically-refreshed, not live-synced — resolves that sub-decision). Swept for
+  player-identifying content before push: none found (only John's own author byline in the guide).
+  **Licence decided and applied 2026-08-15: CC BY-NC-SA 4.0** (`LICENSE.md` in the public repo,
+  README updated to match). **Only remaining item before this task closes: the survey endpoint**
+  (its own task below).
 - Risk: medium — Ambiguity: low, the shape is already decided (see D-2026-08-13-public-community-repo).
   Damage scale: medium — this is a real public-exposure decision (making design reasoning and the guide
   visible to strangers), though scoped deliberately to exclude anything player-identifying.
@@ -141,7 +152,7 @@ Last Updated: 2026-08-13
   `OPEN-QUESTIONS.md`, and the player survey (static HTML, Formspree-backed — see the survey's own
   rebuild task below). Enable Issues/Discussions for community feedback and PRs for wording fixes.
   Explicitly excludes `playtest/PLAYTEST-EVIDENCE.md`, session notes, and anything player-identifying —
-  those stay in this Forgejo-hosted project, unchanged. See D-2026-08-13-public-community-repo for the
+  those stay in this privately-hosted project, unchanged. See D-2026-08-13-public-community-repo for the
   full reasoning and the G/H options considered.
 - Needs a Claude Code session (real GitHub push access) rather than this project's usual MCP-connector
   sessions, which can't create repos or push to GitHub directly.
@@ -154,9 +165,34 @@ Last Updated: 2026-08-13
 
 ### Rebuild the player survey off Claude-artifact hosting (Formspree + static HTML)
 - Tags: tooling onboarding
-- Status: blocked
-- Blocked reason: needs a Formspree form endpoint from the owner (sign up at formspree.io, create a
-  form, provide the `https://formspree.io/f/...` address) before the submit wiring can be finished.
+- Status: open — **endpoint wired and delivery verified 2026-08-15**; awaiting one real-phone tap-through
+  to sign off the Done-when as literally written
+- Endpoint swap done 2026-08-15 (Claude Code session): the owner supplied
+  `https://formspree.io/f/mgawleyl`; it replaced the `REPLACE_ME` placeholder in both copies (this
+  project's `playtest/surveys/onboarding-spellcasting-survey.html` and the public repo's
+  `survey/index.html`), both pushed. The live page at
+  `https://chompy78.github.io/pact-guide-public/survey/` was confirmed serving the real endpoint (and
+  byte-for-byte identical to this project's copy).
+- End-to-end submission **confirmed working** 2026-08-15 — the step never actually confirmed during the
+  earlier troubleshooting. A full survey run was completed through the real page JS at a 375×812 mobile
+  viewport and submitted; the page showed its success state (only reachable when Formspree returns 2xx),
+  and a Formspree notification email landed in the owner's inbox 5 seconds later with the whole
+  payload intact (subject `PACT survey response — ZZ TEST …`, submission id
+  `d85b352e-9e3b-4ae6-9254-b8157d31d9bd`). **A test record therefore exists in the Formspree dashboard
+  and inbox, marked `ZZ TEST — Claude Code endpoint check (delete me)` — delete it before reading real
+  responses.**
+- **Remaining before this closes:** the Done-when says *real mobile test*; the run above used a
+  desktop browser at a mobile viewport, which is emulation, not a real device. Given the original
+  failure mode was mobile-specific, that distinction is kept rather than waved through. One tap-through
+  on an actual phone (open the live link, submit, confirm the email arrives) closes this task.
+- Rebuild completed 2026-08-13 (Claude Code session): `playtest/surveys/onboarding-spellcasting-survey.html`
+  is now a complete standalone HTML document (doctype/head/viewport — the artifact version was a
+  fragment), all `window.storage` code removed, the admin/results panel and "Copy as PT-xxx draft"
+  button removed entirely (they only worked on Claude storage, and the results view was openly
+  reachable — dropping it also closes that soft privacy hole), and submission POSTs JSON to Formspree.
+  The endpoint is a marked placeholder (`FORMSPREE_ENDPOINT`, top of the script) that shows a clear
+  on-page error if used unconfigured. A copy is live at
+  `https://chompy78.github.io/pact-guide-public/survey/` (public repo path `survey/index.html`).
 - Risk: low — Ambiguity: low, the target shape is decided (drop `window.storage`, POST to Formspree,
   remove the results-view panel and "Copy as PT-xxx draft" button that depended on Claude's storage).
   Damage: low — reversible, no rules/pricing content involved.
@@ -167,9 +203,32 @@ Last Updated: 2026-08-13
   abandoning that delivery path. See D-2026-08-13-public-community-repo for the full pivot reasoning.
   Response collection moves to Formspree (private, DM-only via their own account); hosting moves to
   the new public repo above via GitHub Pages (or equivalent).
-- Done when: the survey submits successfully to Formspree from a real mobile test, the page no longer
-  references `window.storage` anywhere, and it's confirmed reachable at a public URL served from the
-  new repo.
+- Done when: the survey submits successfully to Formspree from a real mobile test **[part-met — submits
+  and delivers successfully, verified end-to-end 2026-08-15, but from an emulated mobile viewport, not a
+  real device]**, the page no longer references `window.storage` anywhere **[met — grep confirms zero
+  references]**, and it's confirmed reachable at a public URL served from the new repo **[met — HTTP 200
+  at `https://chompy78.github.io/pact-guide-public/survey/`]**.
+
+### Move the refresh script's working clone out of the H:-drive-visible tree
+- Tags: tooling
+- Status: open
+- Risk: low — Ambiguity: low, the fix is mechanical (change one path in one script). Damage: low,
+  reversible, no content risk — this is about avoiding a *visibility* confusion, not a privacy leak
+  (the clone only ever contains what was already deliberately published).
+- Context: `scripts/refresh-public-repo.sh` currently clones the public repo into
+  `.public-repo-clone/` inside this project's own folder. Since this whole project sits under
+  `/data/`, which is the exact tree the `[data]` Samba share exposes as the `H:` drive on Windows
+  (confirmed via `/etc/samba/smb.conf`: `[data]` → `path = /data`), that clone is visible on `H:`
+  drive too — nested right inside the private project folder, i.e. a copy of the *public* repo's
+  content sitting inside the *private* one. Raised 2026-08-15 while discussing how to tell the two
+  repos apart without confusion; deliberately deferred that session in favour of just renaming the
+  public repo first (see D-2026-08-13-public-community-repo's rename addendum) — this task is the
+  other half.
+- Fix: change `PUBLIC_CLONE` in `scripts/refresh-public-repo.sh` to a path outside `/data/`
+  entirely (e.g. under the server's home directory) so nothing related to the public repo ever
+  appears on `H:` drive. The clone is disposable/re-creatable, so no data-migration risk.
+- Done when: `scripts/refresh-public-repo.sh` clones outside `/data/`, and a fresh dry run confirms
+  nothing under this project's folder holds a public-repo clone.
 
 ### Beginner onboarding
 - Tags: docs onboarding

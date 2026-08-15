@@ -41,21 +41,105 @@ Last Updated: 2026-08-13
   any file containing player-identifying content or specific-player commentary. Reasoning: design
   discussion is fair to share and useful to collaborators, but raw player feedback was given to
   the DM, not for publication — that's a consent question, not a tidiness one. These stay in the
-  existing Forgejo-hosted working project, unchanged.
+  existing privately-hosted working project, unchanged.
 - **Survey response collection:** the public repo hosts the survey **questions** (public, static
   HTML), not the **answers**. Responses submit to Formspree (a third-party form-relay service),
   visible only via the DM's own Formspree account (email + dashboard export) — kept separate from
   the public repo entirely, so there's no path from "public survey link" to "public response data."
-- **Status:** Decided, not yet implemented. Repo creation requires real GitHub push access this
-  chat session doesn't have — a Claude Code session (confirmed to already have working
-  `Chompy78` GitHub access, per this project's `Sessions/` notes on the unrelated copilot-only
-  repo) is the intended executor. The survey's Formspree rewiring (dropping `window.storage`,
-  removing the results-view panel and PT-xxx draft button that depended on it) is still pending —
-  blocked on the owner providing a Formspree form endpoint.
+- **Status:** Implemented 2026-08-13 (addendum below). The survey's Formspree endpoint remains the
+  one outstanding piece — blocked on the owner providing it.
 - **Follow-up needed:** decide the new repo's name, add a license, write a short README/
   CONTRIBUTING note, and decide whether `TASK_BOARD.md`/`DECISIONS.md`/`OPEN-QUESTIONS.md` are
   pushed as live copies (needing a refresh discipline, like the old — now-retired —
   `for-copilot/` mirrors) or as periodic manual snapshots.
+- **Addendum 2026-08-13 (implementation, Claude Code session):** John created the
+  repo himself — **`Chompy78/pact-guide`** (public, personal account; note the deliberate
+  personal-account placement rather than a private org, matching this being a
+  community-facing creative project, and the near-name-collision with the *private*
+  push-mirror of this project, flagged and accepted). The session then resolved
+  the remaining follow-ups except the licence: the three design docs went up as **verbatim
+  periodic snapshots** (not live-synced — the retired `for-copilot/` mirror experience argued
+  against another live-sync discipline); a README covers the CONTRIBUTING role (how to file
+  Issues/Discussions/PRs, what's deliberately private, licence marked "not yet finalised");
+  Issues/Discussions enabled; GitHub Pages enabled and verified serving the landing page, guide,
+  and survey (all HTTP 200) at `https://chompy78.github.io/pact-guide/`. The survey rebuild
+  itself (drop `window.storage`, remove the results-view/PT-draft admin panel, POST JSON to
+  Formspree, full standalone HTML document with mobile viewport) is done in
+  `playtest/surveys/onboarding-spellcasting-survey.html` and mirrored to the public repo's
+  `survey/index.html`, with a marked placeholder endpoint that errors clearly until configured.
+  A pre-push sweep of all published files found no player-identifying content, no emails, and no
+  infrastructure details (only John's own author byline/copyright in the guide). **Licence
+  decision still open.**
+- **Addendum 2026-08-15 (operating model, Claude Code session):** confirmed the
+  two repos hold no real player data yet — every entry in `playtest/PLAYTEST-EVIDENCE.md` is
+  still `[EXAMPLE]` placeholder content, not real playtest results. Considered merging into a
+  single public repo now, while nothing sensitive exists, rather than maintaining an ongoing
+  snapshot step. Rejected: a public GitHub repo isn't reliably reversible once real content is
+  pushed (crawling, forking, cloning can happen before a mistake is caught and removed), and the
+  survey is about to start collecting real, potentially player-identifying responses — so the
+  wall needs to already be in place before that starts, not retrofitted afterward. Decided to
+  keep the split and instead make the refresh cheap: built `scripts/refresh-public-repo.sh`
+  (copies the public-facing files into a working clone of the public repo, runs a mechanical
+  privacy sweep, shows a diff, and only pushes on an explicit `--push`). Documented the
+  procedure, and the standing risk it doesn't fully cover — a `DECISIONS.md`/`TASK_BOARD.md`
+  entry describing real player feedback in identifying detail would still get copied across,
+  since the sweep can't recognise a real name — as a new "Publishing to the public repo" section
+  in `AGENTS.md`'s Working Rules.
+- **Addendum 2026-08-15 (rename, Claude Code session):** renamed the public repo
+  `Chompy78/pact-guide` → **`Chompy78/pact-guide-public`** to remove the near-name-collision with
+  this project's own private mirror flagged when the repo was first created — the two
+  were distinguishable only by account and case, a real risk for picking the wrong one by
+  mistake. GitHub Pages now serves from `chompy78.github.io/pact-guide-public/`; all references
+  updated across `AGENTS.md`, `TASK_BOARD.md`, `CURRENT-WORK.md`, and
+  `scripts/refresh-public-repo.sh`'s remote URL (the stale local `.public-repo-clone` working
+  copy was deleted rather than repointed — the script re-clones it fresh on next use). Past
+  entries above that still say `Chompy78/pact-guide` are left as written — accurate at the time —
+  rather than rewritten.
+- **Addendum 2026-08-15 (licence, Claude Code session):** decided **CC BY-NC-SA
+  4.0** (Attribution-NonCommercial-ShareAlike) for the guide and design documents — share and
+  remix freely with credit, non-commercially, under the same licence. Chosen over leaving it
+  all-rights-reserved (too restrictive for a community project explicitly inviting
+  collaboration) and over allowing commercial reuse (no reason to permit someone selling
+  derivatives of a homebrew hobby system). Added `LICENSE.md` to the public repo and updated its
+  README's Licensing section to match, closing the last open sub-decision from
+  D-2026-08-13-public-community-repo's original "Follow-up needed" list.
+- **Addendum 2026-08-15 (survey endpoint + first confirmed delivery, Claude Code session):** the owner
+  supplied the Formspree endpoint (`https://formspree.io/f/mgawleyl`); it replaced the `REPLACE_ME`
+  placeholder in both copies of the survey, both pushed, and the live public page was confirmed serving
+  it. The submission path was then **verified end-to-end for the first time** — the thing repeated
+  earlier troubleshooting never actually established. Because the in-app browser blocks `github.io`, the
+  test served this project's own copy of the file over localhost after confirming it byte-for-byte
+  identical to the live page, ran a complete survey pass through the real page JS at a 375×812 mobile
+  viewport, and submitted: the page reached its success state (only reachable on a 2xx from Formspree)
+  and a Formspree notification email arrived in the owner's inbox 5 seconds later carrying every
+  field. **Deliberately not claimed as closing the task's "real mobile test" criterion** — an emulated
+  viewport is not a real device, and since the original failure mode was mobile-specific, that gap is
+  recorded rather than waved through; one real-phone tap-through remains.
+- **Addendum 2026-08-15 (privacy-sweep gap found and fixed, Claude Code session):** running
+  `scripts/refresh-public-repo.sh` for the endpoint push surfaced a genuine defect in the script written
+  the same day — its sweep grep was **case-sensitive**, so it printed "No matches — clean" on a diff that
+  would have newly published eight capitalised infrastructure mentions across `DECISIONS.md` and
+  `TASK_BOARD.md` — the private Git host's name, the build machine's name, and a private org name, the
+  last of which was not public anywhere at that point. (The literal terms are not restated here so this
+  entry survives its own redaction; they are the pattern list in `scripts/refresh-public-repo.sh`.) The
+  pattern list already covered the main one in lowercase, so the intent to catch exactly this was
+  unambiguous — only the case handling was wrong. Fixed by adding `-i` and the two missing patterns.
+- **Addendum 2026-08-15 (public snapshots are redacted on copy, not hand-scrubbed, Claude Code session):**
+  with the sweep fixed, the question became how to publish the design-doc snapshots without those
+  infrastructure references. Hand-scrubbing the working clone was rejected as non-durable — the script
+  re-copies from this project on every run, so a manual scrub is silently undone by the next refresh, and
+  the failure is invisible (the copy just looks correct). Instead `refresh-public-repo.sh` now runs a
+  **redaction pass between the copy and the sweep**, mapping each known internal phrasing to a neutral
+  equivalent (`privately-hosted` → `privately-hosted`, `Claude Code session` → `Claude Code
+  session`, the org and push-mirror names → generic descriptions). The private files keep the real detail;
+  only the published copies are rewritten. The sweep deliberately keeps its patterns for the raw terms and
+  now runs *after* redaction, which makes it the check on the redactor: a novel phrasing the map doesn't
+  know still blocks the push rather than leaking. The first run of this arrangement also flagged a
+  genuine false positive — a third-party service's own public no-reply address, quoted in these very
+  entries. That was fixed by rewording the prose, **not** by adding an exclusion to the email pattern:
+  the email check is the one that protects real players' addresses, so it stays maximally strict and
+  the burden sits on the writing instead. This is the standing risk the script's own header and
+  AGENTS.md's "Publishing to the public repo" section warn about, caught in practice on its first real use.
 
 ---
 
