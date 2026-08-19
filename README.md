@@ -7,14 +7,20 @@ the design reasoning behind it.
 
 ## Read the guide
 
-**[PACT Players Guide](PACT-Players-Guide.html)** — the complete current guide, one
-self-contained HTML file. Download it or read it via the project's GitHub Pages site.
+**[Read the PACT Players Guide online](https://chompy78.github.io/pact-guide-public/PACT-Players-Guide.html)**
+— the complete current guide as a readable page, with a searchable contents sidebar.
 
-## Playing in a PACT game? Take the survey
+Prefer a local copy? [Download `PACT-Players-Guide.html`](PACT-Players-Guide.html) — it's one
+self-contained file that works offline once saved.
 
-**[Player survey](survey/)** — about five minutes, covering character creation, spending AP,
-spellcasting, and how the campaign's feeling. Responses go privately to the DM (via Formspree);
-nothing you write appears in this repo.
+## Playing in a PACT game? Tell us how it went
+
+**[PACT player feedback surveys](https://chompy78.github.io/pact-guide-public/survey/)** — six
+short, focused surveys, two or three minutes each: building your character, the rules in general,
+spellcasting, class abilities, campaign feedback, and the character tools. Pick whichever you've
+actually got something to say about — there's no need to do them all, and your character details
+carry over between them. Responses go privately to the DM (via Formspree); nothing you write
+appears in this repo.
 
 ## The design reasoning, in the open
 
