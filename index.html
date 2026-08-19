@@ -2,61 +2,142 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PACT Rules &amp; Player Guide</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PACT — A Points-Buy Advancement System for 2024 D&amp;D</title>
+<meta name="description" content="PACT is a homebrew tabletop RPG system where everything your character is — levels, class features, spells, skills — is bought with one currency. Read the Player's Guide, take a playtest survey, or follow the design reasoning in the open.">
+<meta property="og:title" content="PACT — Points · Aptitudes · Coin · Time">
+<meta property="og:description" content="Build any hero, one hard-won scrap of power at a time. A points-buy advancement system for 2024 Dungeons &amp; Dragons.">
+<meta property="og:image" content="https://chompy78.github.io/pact-guide-public/assets/cover.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <style>
-  :root{
-    --ink:#3A2A18; --ink-dark:#58180D; --accent:#882D17; --gold:#B89968;
-    --paper:#FCF8EE; --card:#FBF5E9; --muted:#766649; --line:rgba(88,24,13,0.16);
+  /* Palette and type carried across from the Player's Guide so the site and the
+     book read as one thing. Token names match the guide's own :root block. */
+  :root{--ink:#2b2620;--accent:#7a4b2b;--rule:#cdbf9f;--head:#5a3a1f;
+        --deep:#58180D;--muted:#766649;--card:#fbf7ec;--panel:#efe6d0}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{margin:0;background:#ece3cf;color:var(--ink);
+    font-family:Georgia,'Times New Roman',serif;line-height:1.6;font-weight:400;
+    font-size:17px;overflow-wrap:break-word;word-wrap:break-word}
+
+  .page{max-width:880px;margin:24px auto;background:var(--card);width:100%;
+    padding:clamp(20px,5vw,64px);box-shadow:0 2px 18px rgba(0,0,0,.18);
+    border:1px solid #e2d8bf;border-radius:3px}
+  img{max-width:100%;height:auto}
+
+  /* Full-bleed cover, same trick the guide uses to escape the page padding. */
+  .cover-banner{display:block;max-width:none;width:calc(100% + 2*clamp(20px,5vw,64px));
+    margin:calc(-1*clamp(20px,5vw,64px)) calc(-1*clamp(20px,5vw,64px)) 1.4em;
+    border-radius:3px 3px 0 0;object-fit:cover}
+
+  h1,h2,h3{font-family:Georgia,serif;color:var(--head);line-height:1.25;font-weight:700}
+  h1{font-size:clamp(2.8rem,11vw,4.4rem);color:var(--deep);text-align:center;
+    letter-spacing:.03em;margin:.15em 0 .3em;border-bottom:none}
+  .expansion{text-align:center;font-size:clamp(1rem,4.2vw,1.25rem);margin:.15em 0;color:var(--deep)}
+  .expansion u{text-decoration-thickness:1px;text-underline-offset:3px}
+  .strap{text-align:center;margin:.6em 0 .15em}
+  .edition{text-align:center;margin:.15em 0;font-style:italic}
+  .quote{text-align:center;color:var(--deep);font-style:italic;margin:.9em 0 .2em}
+  .byline{text-align:center;color:var(--deep);font-weight:700;margin:.2em 0}
+  .forge{text-align:center;color:var(--muted);margin:.15em 0 0}
+
+  .rule{border:0;border-top:3px double var(--rule);margin:1.5em 0}
+  hr{border:0;border-top:1px solid var(--rule);margin:1.6em 0}
+
+  .lede{margin:1.2em 0 .4em}
+  .lede strong{color:var(--head)}
+
+  h2{font-size:1.5rem;border-bottom:1px solid var(--rule);padding-bottom:.2em;margin:1.8em 0 .8em}
+
+  /* Cards borrow the guide's callout-table look: thin rule border on paper. */
+  .card{display:block;text-decoration:none;color:var(--ink);background:var(--panel);
+    border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:4px;
+    padding:16px 20px;margin-bottom:14px;transition:background .15s,border-left-color .15s}
+  .card:hover,.card:focus-visible{background:#e9dec4;border-left-color:var(--deep);outline:none}
+  .card h3{font-size:1.15rem;color:var(--accent);margin:0 0 .25em}
+  .card:hover h3{color:var(--deep)}
+  .card p{margin:0;font-size:.94rem;color:var(--ink)}
+
+  .facts{margin:1.1em 0 0;padding:0;list-style:none}
+  .facts li{border-top:1px solid var(--rule);padding:.5em 0;font-size:.95rem}
+  .facts li:last-child{border-bottom:1px solid var(--rule)}
+  .facts b{color:var(--head)}
+
+  /* No border-top here: the facts list already closes with a rule. */
+  footer{margin-top:2em;font-size:.82rem;color:var(--muted);text-align:center}
+  footer a{color:var(--accent)}
+  footer p{margin:.5em 0}
+  .legal{font-style:italic;font-size:.78rem;line-height:1.5}
+
+  @media (max-width:680px){
+    .page{margin:0;border-radius:0;border-left:0;border-right:0;box-shadow:none}
+    .card{padding:14px 15px}
   }
-  *{box-sizing:border-box;}
-  body{margin:0;background:var(--paper);color:var(--ink);line-height:1.55;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-  .wrap{max-width:640px;margin:0 auto;padding:40px 16px 60px;}
-  h1,h2{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;color:var(--ink-dark);}
-  header{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:18px;margin-bottom:26px;}
-  header h1{font-size:1.7rem;margin:0 0 6px;}
-  header p{color:var(--muted);font-size:.95rem;margin:0;}
-  .card{display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;
-    padding:18px 16px;margin-bottom:14px;text-decoration:none;color:var(--ink);}
-  .card:hover{border-color:var(--accent);}
-  .card h2{font-size:1.1rem;margin:0 0 4px;}
-  .card p{margin:0;font-size:.9rem;color:var(--muted);}
-  footer{text-align:center;margin-top:30px;font-size:.78rem;color:var(--muted);}
-  footer a{color:var(--muted);}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>PACT Rules &amp; Player Guide</h1>
-    <p>A homebrew tabletop RPG where everything your character is — levels, features,
-      spells — is bought with one currency. Your level is just how many Hit Dice you own.</p>
-  </header>
+<div class="page">
+
+  <img class="cover-banner" src="assets/cover.jpg"
+       alt="A lone swordsman on a mountain road, his cloak and armour dissolving into a storm of gold coins and motes of light.">
+
+  <h1>PACT</h1>
+  <p class="expansion"><u>Points</u> · <u>Aptitudes</u> · <u>Coin</u> · <u>Time</u></p>
+  <p class="strap">A Points-Buy Advancement System for 2024 Dungeons &amp; Dragons</p>
+  <p class="edition">Player's Guide, First Edition</p>
+  <p class="quote">“Build any hero, one hard-won scrap of power at a time.”</p>
+  <p class="byline">by John Chow</p>
+  <p class="forge">DragonReach Forge</p>
+
+  <hr class="rule">
+
+  <p class="lede">In PACT, <strong>everything your character is</strong> — levels, class features,
+  spells, skills, proficiencies — is bought with a single currency: <strong>Advancement Points</strong>.
+  There are no class tables and no automatic level-up packages. Your level is simply how many
+  Hit Dice you have bought. Want to be a Wizard who took up the sword at forty? Buy the sword
+  training. Want to stay a lightly-built scout who never gets tougher? Don't buy the Hit Dice.</p>
 
   <a class="card" href="PACT-Players-Guide.html">
-    <h2>Read the Players Guide →</h2>
-    <p>The complete current guide, one self-contained page.</p>
+    <h3>Read the Player's Guide →</h3>
+    <p>The complete current guide — character creation, the Master Cost Table, spellcasting,
+      and a DM's section. One self-contained page with a searchable contents sidebar.</p>
   </a>
 
   <a class="card" href="survey/">
-    <h2>Playing in a PACT game? Tell us how it went →</h2>
+    <h3>Playing in a PACT game? Tell us how it went →</h3>
     <p>Six short surveys — building your character, the rules, spellcasting, class abilities,
       the campaign, and the character tools. Two or three minutes each; take any one of them.
       Responses go privately to the DM.</p>
   </a>
 
   <a class="card" href="https://github.com/Chompy78/pact-guide-public">
-    <h2>See the design reasoning →</h2>
-    <p>The decision log, open questions, and task board — plus Issues and
-      Discussions for feedback.</p>
+    <h3>See the design reasoning →</h3>
+    <p>The decision log, the open questions still waiting on playtest evidence, and the task
+      board — plus Issues and Discussions if you've found a rules hole.</p>
   </a>
+
+  <h2>What you're getting into</h2>
+  <ul class="facts">
+    <li><b>One currency.</b> Advancement Points buy Hit Dice, features, spells, and proficiencies alike.</li>
+    <li><b>Level = Hit Dice.</b> No class table decides what you get at 5th. You do.</li>
+    <li><b>Built on 2024 5e.</b> Species, classes, and spells you already know, priced rather than granted.</li>
+    <li><b>Roughly 535 AP</b> builds a full level-20 character on the standard track — 455 lean, 615 generous.</li>
+    <li><b>Still in playtest.</b> The open questions are published, not hidden.</li>
+  </ul>
 
   <footer>
     <p>Feedback welcome via
       <a href="https://github.com/Chompy78/pact-guide-public/issues">Issues</a> and
       <a href="https://github.com/Chompy78/pact-guide-public/discussions">Discussions</a>.</p>
+    <p>Text and design documents licensed under
+      <a href="LICENSE.md">CC BY-NC-SA 4.0</a>. © 2026 John Chow.</p>
+    <p class="legal">This is free, non-commercial fan content. It is not for sale.
+      PACT is unofficial Fan Content permitted under the Wizards of the Coast Fan Content Policy.
+      It is not approved or endorsed by Wizards. Portions of the materials used are property of
+      Wizards of the Coast LLC. © Wizards of the Coast LLC.</p>
   </footer>
+
 </div>
 </body>
 </html>
