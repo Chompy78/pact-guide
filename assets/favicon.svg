@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="PACT">
+  <title>PACT</title>
+  <!-- A single coin: everything a PACT character is gets bought with one currency.
+       Kept deliberately coarse — it has to survive being drawn 16px wide in a tab. -->
+  <defs>
+    <radialGradient id="face" cx="38%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#f4dc9c"/>
+      <stop offset="55%" stop-color="#d9b062"/>
+      <stop offset="100%" stop-color="#a97c34"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="11" fill="#58180D"/>
+  <circle cx="32" cy="32" r="27.5" fill="url(#face)"/>
+  <circle cx="32" cy="32" r="26.3" fill="none" stroke="#7a4b2b" stroke-width="2.2"/>
+
+  <!-- P, drawn as paths so the mark never depends on a font being present. -->
+  <g fill="#58180D">
+    <rect x="19" y="13" width="8.5" height="38" rx="1"/>
+    <path d="M24 13h11.5a12.5 12.5 0 0 1 0 25H24v-8.5h10.9a4 4 0 0 0 0-8H24z"/>
+  </g>
+</svg>
